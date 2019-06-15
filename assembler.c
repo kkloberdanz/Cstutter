@@ -69,7 +69,7 @@ static bool is_jump(inst_t inst) {
 }
 */
 
-char *make_str(const char *str) {
+static char *make_str(const char *str) {
     char *dst = malloc(strlen(str) + 1);
     strcpy(dst, str);
     return dst;
@@ -143,7 +143,7 @@ static struct instruction *make_inst(const char *inst_str) {
     return instruction;
 }
 
-void strip(char *str) {
+static void strip(char *str) {
     while (*str++) {
         if (*str == '\n') {
             *str = 0;
