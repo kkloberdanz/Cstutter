@@ -55,7 +55,6 @@ static bool requires_immediate(inst_t inst) {
     }
 }
 
-/*
 static bool is_jump(inst_t inst) {
     switch (inst) {
         case J:
@@ -67,7 +66,6 @@ static bool is_jump(inst_t inst) {
             return false;
     }
 }
-*/
 
 static char *make_str(const char *str) {
     char *dst = malloc(strlen(str) + 1);
@@ -174,6 +172,10 @@ static linkedlist *assemble(const char *input_filename) {
                 inst->immediate = make_str(input_buffer);
             }
         }
+        if (is_jump(inst->inst)) {
+            /* TODO: store lable in labels map to be resolved at the
+               end of parsing */
+        }
         next = ll_append(next, inst);
     }
     fclose(input_file);
@@ -199,7 +201,7 @@ static void destroy_instructions(linkedlist *ll) {
 static void emit_assembly(char *input_filename, char *output_filename) {
     FILE *output_file = fopen(output_filename, "w");
     linkedlist *instructions = assemble(input_filename);
-    linkedlist *head = instructions;
+    linkedlist *head = instructions->next;
     struct instruction *instruction;
     inst_t inst;
     while (head) {

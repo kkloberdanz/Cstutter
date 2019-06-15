@@ -3,7 +3,9 @@ WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 
 CC=gcc $(CFLAGS) $(WARN_FLAGS)
 
-all: lexer parser stutter main linkedlist ir assembler growstring linkedlist
+OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist bst
+
+all: $(OBJS)
 	$(CC) -o stutter \
              main.o \
 			 stutter.o \
@@ -15,6 +17,9 @@ all: lexer parser stutter main linkedlist ir assembler growstring linkedlist
 
 main:
 	$(CC) -c main.c
+
+bst:
+	$(CC) -c bst.c
 
 assembler: linkedlist
 	$(CC) -c assembler.c
@@ -45,7 +50,7 @@ parser:
 lint: clean
 	splint *.c
 
-test: build_ll_test build_gs_test
+test: build_ll_test build_gs_test build_bst_test
 	rm -f testreport.log
 	echo "Test results" >> testreport.log
 	date >> testreport.log
@@ -56,7 +61,14 @@ test: build_ll_test build_gs_test
 	echo "Testing: ll_test" >> testreport.log && \
 		valgrind ./ll_test 2>> testreport.log
 
+	echo "Testing: bst_test" >> testreport.log && \
+		valgrind ./bst_test 2>> testreport.log
+
 	less testreport.log
+
+build_bst_test:
+	rm -f bst_test
+	$(CC) -o bst_test bst.c tests/bst_test.c
 
 build_ll_test:
 	rm -f ll_test
