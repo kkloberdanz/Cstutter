@@ -70,6 +70,7 @@ linkedlist *ll_concat(linkedlist *dest, linkedlist *src) {
 
 
 void ll_free(linkedlist *list) {
+    /* TODO: pass destructor as function pointer */
     while (list) {
         linkedlist *tmp = list;
         list = list->next;
