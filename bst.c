@@ -39,10 +39,14 @@ _tail_insert:
     return root;
 }
 
+void bst_print_node(struct BST* node) {
+    printf("{\"%s\": %d}\n", node->key, node->value);
+}
+
 void bst_print(struct BST* node) {
     if (node != NULL) {
         bst_print(node->left);
-        printf("{\"%s\": %d}\n", node->key, node->value);
+        bst_print_node(node);
         bst_print(node->right);
     }
 }
@@ -54,18 +58,13 @@ _tail_find:
     if (comparison < 0) {
         if (node->right == NULL) {
             return NULL;
-        } else if (!strcmp(node->right->key, key)) {
-            return node;
         } else {
             node = node->right;
             goto _tail_find;
         }
     } else if (comparison > 0) {
-
         if (node->left == NULL) {
             return NULL;
-        } else if (!strcmp(node->left->key, key)) {
-            return node;
         } else {
             node = node->left;
             goto _tail_find;

@@ -5,6 +5,7 @@
 
 int main() {
     struct BST *bst = NULL;
+    struct BST *node = NULL;
     char *words[] = {
         "Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur",
         "adipiscing", "elit,", "sed", "do", "eiusmod", "tempor", "incididunt",
@@ -22,6 +23,14 @@ int main() {
         bst = bst_insert(bst, words[i], i);
     }
     bst_print(bst);
+
+    node = bst_find(bst, "non");
+    bst_print_node(node);
+    if (node->value != 56) {
+        fprintf(stderr, "%s\n", "bst_find returned wrong node");
+        exit(EXIT_FAILURE);
+    }
+
     bst_destroy(bst);
     return 0;
 }
