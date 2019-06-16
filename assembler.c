@@ -27,7 +27,7 @@
 #include "bst.h"
 #include "instructions.h"
 
-static char *PROGRAM_NAME;
+static char *PROGRAM_NAME = NULL;
 
 struct instruction {
     inst_t inst;
@@ -39,6 +39,12 @@ static char *make_str(const char *str) {
     char *dst = malloc(strlen(str) + 1);
     strcpy(dst, str);
     return dst;
+}
+
+void print_usage() {
+    fprintf(stderr,
+            "usage: %s INPUT OUTPUT\n",
+            PROGRAM_NAME);
 }
 
 static struct instruction *lookup_instruction(const char *str) {
@@ -236,16 +242,30 @@ static void emit_assembly(char *input_filename, char *output_filename) {
 int main(int argc, char **argv) {
     char *input_filename;
     char *output_filename;
+    int len;
+
     PROGRAM_NAME = argv[0];
     if (argc != 3) {
-        fprintf(stderr,
-                "invalid arguments, expecting %s INPUT OUTPUT\n",
-                argv[0]);
+        print_usage();
         exit(EXIT_FAILURE);
     }
 
     input_filename = argv[1];
     output_filename = argv[2];
+
+    len = strlen(output_filename);
+    if (strcmp(".s", output_filename + (len - 2)) == 0) {
+        fprintf(stderr,
+                "second argument is the destination and should not end in .s");
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
+
+    if (strcmp(input_filename, output_filename) == 0) {
+        fprintf(stderr, "same filename for bot input and output\n");
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
     emit_assembly(input_filename, output_filename);
 
     return 0;
