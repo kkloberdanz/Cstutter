@@ -22,6 +22,8 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
+#include <stdio.h>
+
 typedef enum {
     NOP,
     PUSH,
@@ -69,7 +71,8 @@ char *inst_names[] = {
     "CALL",
     "RET",
     "POPC",
-    "HALT"
+    "HALT",
+    NULL
 };
 
 #endif /* INSTRUCTIONS_H */

@@ -76,54 +76,15 @@ static char *make_str(const char *str) {
 static struct instruction *lookup_instruction(const char *str) {
     inst_t inst;
     struct instruction *instruction;
-    if (strcmp(str, "NOP") == 0) {
-        inst = NOP;
-    } else if (strcmp(str, "PUSH") == 0) {
-        inst = PUSH;
-    } else if (strcmp(str, "ADD") == 0) {
-        inst = ADD;
-    } else if (strcmp(str, "SUB") == 0) {
-        inst = SUB;
-    } else if (strcmp(str, "MUL") == 0) {
-        inst = MUL;
-    } else if (strcmp(str, "DIV") == 0) {
-        inst = DIV;
-    } else if (strcmp(str, "MOD") == 0) {
-        inst = MOD;
-    } else if (strcmp(str, "PRINTI") == 0) {
-        inst = PRINTI;
-    } else if (strcmp(str, "READI") == 0) {
-        inst = READI;
-    } else if (strcmp(str, "PRINTC") == 0) {
-        inst = PRINTC;
-    } else if (strcmp(str, "READC") == 0) {
-        inst = READC;
-    } else if (strcmp(str, "POP") == 0) {
-        inst = POP;
-    } else if (strcmp(str, "LOAD") == 0) {
-        inst = LOAD;
-    } else if (strcmp(str, "STORE") == 0) {
-        inst = STORE;
-    } else if (strcmp(str, "J") == 0) {
-        inst = J;
-    } else if (strcmp(str, "JZ") == 0) {
-        inst = JZ;
-    } else if (strcmp(str, "JLEZ") == 0) {
-        inst = JLEZ;
-    } else if (strcmp(str, "JNZ") == 0) {
-        inst = JNZ;
-    } else if (strcmp(str, "CALL") == 0) {
-        inst = CALL;
-    } else if (strcmp(str, "RET") == 0) {
-        inst = RET;
-    } else if (strcmp(str, "POPC") == 0) {
-        inst = POPC;
-    } else if (strcmp(str, "HALT") == 0) {
-        inst = HALT;
-    } else {
-        return NULL;
+    int i;
+    for (i = 0; inst_names[i] != NULL; i++) {
+        if (strcmp(inst_names[i], str) == 0) {
+            inst = i;
+            goto inst_found;
+        }
     }
-
+    return NULL;
+inst_found:
     instruction = malloc(sizeof(struct instruction));
     if (instruction == NULL) {
         fprintf(stderr, "out of memory\n");
@@ -150,12 +111,13 @@ static void strip(char *str) {
     }
 }
 
-void populate_labels(linkedlist *instructions, struct BST *jump_labels) {
+static void populate_labels(linkedlist *instructions, struct BST *jump_labels) {
     linkedlist *cursor = instructions->next;
     while (cursor) {
         struct instruction *inst = cursor->value;
         if (is_jump(inst->inst)) {
-            struct BST *label_node = bst_find(jump_labels, (char *)inst->immediate);
+            char *label = (char *)inst->immediate;
+            struct BST *label_node = bst_find(jump_labels, label);
             int label_location = label_node->value;
             char str[11];
             sprintf(str, "%d", label_location);
@@ -197,7 +159,8 @@ static linkedlist *assemble(const char *input_filename) {
                 i++;
             }
             if (is_jump(inst->inst)) {
-                jump_labels = bst_insert(jump_labels, (char *)inst->immediate, -1);
+                char *label = (char *)inst->immediate;
+                jump_labels = bst_insert(jump_labels, label, -1);
             }
             cursor = ll_append(cursor, inst);
         }
