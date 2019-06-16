@@ -1,10 +1,16 @@
-CFLAGS=-Og -g -std=iso9899:1990
+CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
-
-CC=gcc $(CFLAGS) $(WARN_FLAGS)
 
 OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine
+
+debug: CFLAGS += -Og -g
+debug: all
+
+release: CFLAGS += -Os
+release: all
+
+CC=gcc $(CFLAGS) $(WARN_FLAGS)
 
 all: $(OBJS)
 	$(CC) -o stutter \
@@ -93,3 +99,4 @@ clean:
 	rm -f testreport.log
 	rm -f *_test
 	rm -f stackmachine
+	rm -f sas
