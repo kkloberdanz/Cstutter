@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "instructions.h"
+
 #define STACK_SIZE                 2000
 #define PROG_SIZE                  2000
 #define CALL_STACK_SIZE             500
@@ -63,65 +65,9 @@ void set_call_stack() {
     cp++;
 }
 
-char inst_names[50][50] = {
-    "NOOP",
-    "PUSH",
-    "ADD",
-    "SUB",
-    "MUL",
-    "DIV",
-    "MOD",
-    "PRINTI",
-    "READI",
-    "PRINTC",
-    "READC",
-    "POP",
-    "LOAD",
-    "STORE",
-    "J",
-    "JZ",
-    "JLEZ",
-    "JNZ",
-    "JWL",
-    "JZWL",
-    "JLEZWL",
-    "JNZWL",
-    "RET",
-    "POPC",
-    "HALT"
-};
-
-enum {
-    NOOP    = 0,
-    PUSH    = 1,
-    ADD     = 2,
-    SUB     = 3,
-    MUL     = 4,
-    DIV     = 5,
-    MOD     = 6,
-    PRINTI  = 7,
-    READI   = 8,
-    PRINTC  = 9,
-    READC   = 10,
-    POP     = 11,
-    LOAD    = 12,
-    STORE   = 13,
-    J       = 14,
-    JZ      = 15,
-    JLEZ    = 16,
-    JNZ     = 17,
-    JWL     = 18,
-    JZWL    = 19,
-    JLEZWL  = 20,
-    JNZWL   = 21,
-    RET     = 22,
-    POPC    = 23,
-    HALT = 999999
-};
-
 void print_stack() {
-    printf("*** PRINTING STACK ***\n");
     int i;
+    printf("*** PRINTING STACK ***\n");
     printf("SP: %d\n", sp);
     printf("PC: %d\n", pc);
     for (i = 0; i <= sp; ++i) {
@@ -136,9 +82,9 @@ void print_stack() {
 
 int get_num_lines(char* filename) {
     FILE *fp;
-    fp = fopen(filename, "r");
     int count = 0;
     char c;
+    fp = fopen(filename, "r");
     while ( (c = fgetc(fp)) != EOF) {
         if (c == '\n') {
             count++;
@@ -150,11 +96,13 @@ int get_num_lines(char* filename) {
 
 void load_code_from_file(int *code, char *filename) {
     FILE *fp;
-    fp = fopen(filename, "r");
-
     char buff[255];
     char c;
-    int  count = 0, i = 0;
+    int count = 0;
+    int i = 0;
+
+    fp = fopen(filename, "r");
+
     printf("Reading from: %s\n", filename);
     while ( (c = fgetc(fp)) != EOF) { 
         if (c == '\n') {
@@ -197,7 +145,7 @@ int execute(int inst) {
 
     switch (inst) {
 
-        case NOOP:
+        case NOP:
             break;
 
         case PUSH:
@@ -288,54 +236,6 @@ int execute(int inst) {
             break;
 
 
-        case JZWL:
-            if (stack[sp] == 0) {
-                pc = program[pc+1];
-#ifdef DEBUG
-                printf("JZ target: %d\n", pc);
-#endif
-                return 1;
-            } else {
-                pc++;
-            }
-#ifdef DEBUG
-            printf("JZ target: %d\n", pc);
-#endif
-            break;
-
-        case JLEZWL:
-            if (stack[sp] <= 0) {
-                pc = program[pc+1];
-#ifdef DEBUG
-                printf("JLEZ target: %d\n", pc);
-                print_call_stack();
-#endif
-                return 1;
-            } else {
-                pc++;
-            }
-#ifdef DEBUG
-            printf("JLEZ target: %d\n", pc);
-#endif
-            break;
-
-
-        /* Jump if Not Zero */
-        case JNZWL:
-            if (stack[sp] != 0) {
-                pc = program[pc+1];
-#ifdef DEBUG
-                printf("JNZ target: %d\n", pc);
-#endif
-                return 1;
-            } else {
-                pc++;
-            }
-#ifdef DEBUG
-            printf("JZ target: %d\n", pc);
-#endif
-            break;
-
         /* Return from subroutine,
          * Sets PC to the top address from call_stack[]
          */
@@ -394,18 +294,8 @@ int execute(int inst) {
             }
             break;
 
-        case JWL:
-            pc = program[pc+1];
-            return 1;
-            break;
-
         case PRINTI:
             printf("%d", stack[sp]);
-            break;
-
-        case READI:
-            sp++;
-            scanf("%d", &stack[sp]);
             break;
 
         case PRINTC: 
@@ -415,7 +305,7 @@ int execute(int inst) {
         case READC:
             sp++;
             stack[sp] = getchar();
-            // String is done being read once RETURN is pressed
+            /* String is done being read once RETURN is pressed */
             if (stack[sp] == '\n') {
                 stack[sp] = '\0';
             }
@@ -458,13 +348,14 @@ void print_array(int* arr, int size) {
 
 int main(int argc, char** argv) { 
 
+    int num_lines;
     if (argc < 2) {
         fprintf(stderr, "error: specify the file name\n");
         exit(EXIT_FAILURE);
     } 
 
     printf("*** LOADING ***\n");
-    int num_lines = get_num_lines(argv[1]);
+    num_lines = get_num_lines(argv[1]);
     program = malloc(num_lines * sizeof(int));
 
     load_code_from_file(program, argv[1]);

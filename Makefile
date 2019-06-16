@@ -3,7 +3,8 @@ WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 
 CC=gcc $(CFLAGS) $(WARN_FLAGS)
 
-OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist bst
+OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
+	 bst stackmachine
 
 all: $(OBJS)
 	$(CC) -o stutter \
@@ -17,6 +18,10 @@ all: $(OBJS)
 
 main:
 	$(CC) -c main.c
+
+stackmachine:
+	$(CC) -c stackmachine.c
+	$(CC) -o stackmachine stackmachine.o
 
 bst:
 	$(CC) -c bst.c
@@ -87,3 +92,4 @@ clean:
 	rm -f y.tab.h
 	rm -f testreport.log
 	rm -f *_test
+	rm -f stackmachine
