@@ -30,29 +30,29 @@
 #define STORAGE_SIZE                500
 
 /* Code section */
-int *program;
+static int *program;
 
 /* execution stack */
-int stack[STACK_SIZE];
+static int stack[STACK_SIZE];
 
 /* accessed with instructions STORE and LOAD*/
-int storage[STORAGE_SIZE];
+static int storage[STORAGE_SIZE];
 
 /* Save return address here */
-int call_stack[CALL_STACK_SIZE];
+static int call_stack[CALL_STACK_SIZE];
 
 /* Registers */
-int pc = 0; /* Program Counter */
+static int pc = 0; /* Program Counter */
 
-int sp = 0; /* Stack Pointer */
+static int sp = 0; /* Stack Pointer */
 
-int cp = 0; /* Call Pointer 
+static int cp = 0; /* Call Pointer
                Return address returns address after jump instructions */
 
-int sr = PROG_SIZE; /* Stack Register / Save Register
-                       Used for saving data to the stack */
+static int sr = PROG_SIZE; /* Stack Register / Save Register
+                              Used for saving data to the stack */
 
-void print_call_stack() {
+static void print_call_stack() {
     int i;
     printf("CP = %d\n", cp);
     for (i = 0; i <= cp; ++i) {
@@ -60,18 +60,18 @@ void print_call_stack() {
     }
 }
 
-void set_call_stack() {
-    call_stack[cp] = pc + 2; 
+static void set_call_stack() {
+    call_stack[cp] = pc + 2;
     cp++;
 }
 
-void print_stack() {
+static void print_stack() {
     int i;
     printf("*** PRINTING STACK ***\n");
     printf("SP: %d\n", sp);
     printf("PC: %d\n", pc);
     for (i = 0; i <= sp; ++i) {
-        if (i == sp) { 
+        if (i == sp) {
             printf("%2d: %d*\n", i, stack[i]);
         } else {
             printf("%2d: %d\n", i, stack[i]);
@@ -80,7 +80,7 @@ void print_stack() {
     printf("*** DONE PRINTING ***\n");
 }
 
-int get_num_lines(char* filename) {
+static int get_num_lines(char* filename) {
     FILE *fp;
     int count = 0;
     char c;
@@ -94,7 +94,7 @@ int get_num_lines(char* filename) {
     return count;
 }
 
-void load_code_from_file(int *code, char *filename) {
+static void load_code_from_file(int *code, char *filename) {
     FILE *fp;
     char buff[255];
     char c;
@@ -104,7 +104,7 @@ void load_code_from_file(int *code, char *filename) {
     fp = fopen(filename, "r");
 
     printf("Reading from: %s\n", filename);
-    while ( (c = fgetc(fp)) != EOF) { 
+    while ( (c = fgetc(fp)) != EOF) {
         if (c == '\n') {
             buff[count] = '\0';
             count = 0;
@@ -117,7 +117,7 @@ void load_code_from_file(int *code, char *filename) {
     fclose(fp);
 }
 
-int execute(int inst) {
+static int execute(int inst) {
 
     if (pc > PROG_SIZE) {
         fprintf(stderr, "ERROR: PC out of bounds\n");
@@ -153,8 +153,8 @@ int execute(int inst) {
             sp++;
             stack[sp] = program[++pc];
             break;
-            
-        case LOAD: 
+
+        case LOAD:
             stack[++sp] = storage[program[++pc]];
             break;
 
@@ -165,7 +165,7 @@ int execute(int inst) {
              break;
              */
 
-        case STORE: 
+        case STORE:
             storage[program[++pc]] = stack[sp--];
             break;
 
@@ -178,7 +178,7 @@ int execute(int inst) {
 
         case J:
             set_call_stack();
-            pc = program[pc+1]; 
+            pc = program[pc+1];
 #ifdef DEBUG
             printf("J target: %d\n", pc);
 #endif
@@ -299,7 +299,7 @@ int execute(int inst) {
             printf("%d", stack[sp]);
             break;
 
-        case PRINTC: 
+        case PRINTC:
             printf("%c", stack[sp]);
             break;
 
@@ -310,7 +310,7 @@ int execute(int inst) {
             if (stack[sp] == '\n') {
                 stack[sp] = '\0';
             }
-            break; 
+            break;
 
         case POP:
             sp--;
@@ -330,7 +330,7 @@ int execute(int inst) {
     return 1;
 }
 
-void loop() {
+static void loop() {
     for (pc = 0; execute(program[pc]); ) {
 #ifdef DEBUG
         print_stack();
@@ -338,7 +338,7 @@ void loop() {
     }
 }
 
-void print_array(int* arr, int size) {
+static void print_array(int* arr, int size) {
     int i;
     printf("[");
     for (i = 0; i < size - 1; ++i) {
@@ -347,13 +347,13 @@ void print_array(int* arr, int size) {
     printf("%d]\n", arr[i]);
 }
 
-int main(int argc, char** argv) { 
+int main(int argc, char** argv) {
 
     int num_lines;
     if (argc < 2) {
         fprintf(stderr, "error: specify the file name\n");
         exit(EXIT_FAILURE);
-    } 
+    }
 
     printf("*** LOADING ***\n");
     num_lines = get_num_lines(argv[1]);

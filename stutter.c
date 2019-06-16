@@ -187,7 +187,7 @@ void destroy_ast_node(ASTNode *node) {
 }
 
 
-Ir *get_op_ir(const Operator op) {
+static Ir *get_op_ir(const Operator op) {
     Ir *ir = (Ir *)malloc(sizeof(Ir));
     if (ir == NULL) {
         fprintf(stderr, "%s\n", "failed to allocate Ir object");

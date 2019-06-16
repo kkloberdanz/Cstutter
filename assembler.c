@@ -27,7 +27,7 @@
 #include "bst.h"
 #include "instructions.h"
 
-char *PROGRAM_NAME;
+static char *PROGRAM_NAME;
 
 struct instruction {
     inst_t inst;
