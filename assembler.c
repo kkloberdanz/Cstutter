@@ -128,13 +128,17 @@ static void populate_labels(linkedlist *instructions, struct BST *labels) {
 }
 
 static linkedlist *assemble(const char *input_filename) {
-    FILE *input_file = fopen(input_filename, "r");
-
     char input_buffer[255] = {0};
     linkedlist *instructions = ll_new(make_inst("NOP"));
     struct linkedlist *cursor = instructions;
     struct BST *labels = NULL;
     int i = 0;
+    FILE *input_file = fopen(input_filename, "r");
+    if (input_file == NULL) {
+        fprintf(stderr, "not a file: %s\n", input_filename);
+        exit(EXIT_FAILURE);
+    }
+
     while (fgets(input_buffer, 255, input_file)) {
         struct instruction *inst;
         int len;
@@ -188,11 +192,15 @@ static void destroy_instructions(linkedlist *ll) {
 }
 
 static void emit_assembly(char *input_filename, char *output_filename) {
-    FILE *output_file = fopen(output_filename, "w");
     linkedlist *instructions = assemble(input_filename);
     linkedlist *head = instructions->next;
     struct instruction *instruction;
     inst_t inst;
+    FILE *output_file = fopen(output_filename, "w");
+    if (output_file == NULL) {
+        fprintf(stderr, "could not open for writing: %s\n", output_filename);
+        exit(EXIT_FAILURE);
+    }
     while (head) {
         instruction = (struct instruction *)head->value;
         inst = instruction->inst;
@@ -210,8 +218,9 @@ int main(int argc, char **argv) {
     char *input_filename;
     char *output_filename;
     if (argc != 3) {
-        fprintf(stderr, "%s",
-                "invalid arguments, expecting assembler INPUT OUTPUT\n");
+        fprintf(stderr,
+                "invalid arguments, expecting %s INPUT OUTPUT\n",
+                argv[0]);
         exit(EXIT_FAILURE);
     }
 

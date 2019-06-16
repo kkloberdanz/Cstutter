@@ -139,7 +139,8 @@ int execute(int inst) {
 #ifdef DEBUG
     /*printf("%d\n", inst);*/
     if (inst != HALT) {
-        printf("\nINST: %s, PC: %d, SP: %d, TOP: %d\n", inst_names[inst], pc, sp, stack[sp]);
+        printf("\nINST: %s, PC: %d, SP: %d, TOP: %d\n",
+                inst_names[inst], pc, sp, stack[sp]);
     }
 #endif
 
