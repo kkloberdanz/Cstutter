@@ -27,7 +27,6 @@
 
 
 #include "stutter.h"
-#include "growstring.h"
 #include "linkedlist.h"
 #include "ir.h"
 #include "instructions.h"

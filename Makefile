@@ -17,7 +17,6 @@ all: $(OBJS)
 	$(CC) -o stutter \
              main.o \
 			 stutter.o \
-			 growstring.o \
 			 linkedlist.o \
 			 instructions.o \
 			 ir.o \
@@ -45,7 +44,7 @@ assembler: linkedlist bst instructions
 instructions:
 	$(CC) -c instructions.c
 
-stutter: growstring
+stutter:
 	$(CC) -c stutter.c
 
 growstring:
