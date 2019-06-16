@@ -27,45 +27,13 @@
 #include "bst.h"
 #include "instructions.h"
 
-typedef enum {
-    false = 0,
-    true = 1
-} bool;
+char *PROGRAM_NAME;
 
 struct instruction {
     inst_t inst;
     const char *immediate;
     const char *str;
 };
-
-static bool requires_immediate(inst_t inst) {
-    switch (inst) {
-        case PUSH:
-        case STORE:
-        case LOAD:
-        case J:
-        case JZ:
-        case JNZ:
-        case JLEZ:
-        case CALL:
-            return true;
-        default:
-            return false;
-    }
-}
-
-static bool is_jump(inst_t inst) {
-    switch (inst) {
-        case J:
-        case JZ:
-        case JNZ:
-        case JLEZ:
-        case CALL:
-            return true;
-        default:
-            return false;
-    }
-}
 
 static char *make_str(const char *str) {
     char *dst = malloc(strlen(str) + 1);
@@ -102,15 +70,6 @@ static struct instruction *make_inst(const char *inst_str) {
     return instruction;
 }
 
-static void strip(char *str) {
-    while (*str++) {
-        if (*str == '\n') {
-            *str = 0;
-            return;
-        }
-    }
-}
-
 static void populate_labels(linkedlist *instructions, struct BST *labels) {
     linkedlist *cursor = instructions->next;
     while (cursor) {
@@ -142,8 +101,21 @@ static linkedlist *assemble(const char *input_filename) {
     while (fgets(input_buffer, 255, input_file)) {
         struct instruction *inst;
         int len;
-        strip(input_buffer);
+        int j;
+        char *immediate = NULL;
         len = strlen(input_buffer) - 1;
+        for (j = 0; j <= len; j++) {
+            while (input_buffer[j] == ' ') {
+                input_buffer[j] = '\0';
+                j++;
+                immediate = input_buffer + j;
+            }
+
+            if (input_buffer[j] == '\n') {
+                input_buffer[j] = '\0';
+                break;
+            }
+        }
         if (input_buffer[len] == ':') {
             input_buffer[len] = '\0';
             labels = bst_insert(labels, make_str(input_buffer), i);
@@ -154,13 +126,14 @@ static linkedlist *assemble(const char *input_filename) {
                 exit(EXIT_FAILURE);
             }
             if (requires_immediate(inst->inst)) {
-                if (!fgets(input_buffer, 255, input_file)) {
-                    fprintf(stderr, "%s\n", "failed to read input");
-                } else {
-                    strip(input_buffer);
-                    inst->immediate = make_str(input_buffer);
+                if (immediate == NULL) {
+                    fprintf(stderr,
+                            "%s: syntax error: expecting immediate "
+                            "value after %s on line %s:%d\n",
+                            PROGRAM_NAME, inst->str, input_filename, i + 1);
+                    exit(EXIT_FAILURE);
                 }
-                i++;
+                inst->immediate = make_str(immediate);
             }
             if (is_jump(inst->inst)) {
                 char *label = (char *)inst->immediate;
@@ -217,6 +190,7 @@ static void emit_assembly(char *input_filename, char *output_filename) {
 int main(int argc, char **argv) {
     char *input_filename;
     char *output_filename;
+    PROGRAM_NAME = argv[0];
     if (argc != 3) {
         fprintf(stderr,
                 "invalid arguments, expecting %s INPUT OUTPUT\n",

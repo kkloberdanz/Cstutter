@@ -2,12 +2,12 @@ CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 
 OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
-	 bst stackmachine
+	 bst stackmachine instructions
 
 release: CFLAGS += -Os
 release: all
 
-debug: CFLAGS += -Og -g
+debug: CFLAGS += -Og -g3
 debug: all
 
 CC=gcc $(CFLAGS) $(WARN_FLAGS)
@@ -18,6 +18,7 @@ all: $(OBJS)
 			 stutter.o \
 			 growstring.o \
 			 linkedlist.o \
+			 instructions.o \
 			 ir.o \
 			 lex.yy.o \
 			 y.tab.o -lfl -ly
@@ -32,12 +33,16 @@ stackmachine:
 bst:
 	$(CC) -c bst.c
 
-assembler: linkedlist bst
+assembler: linkedlist bst instructions
 	$(CC) -c assembler.c
 	$(CC) -o sas \
 		     assembler.o \
 			 linkedlist.o \
-			 bst.o
+			 bst.o \
+			 instructions.o
+
+instructions:
+	$(CC) -c instructions.c
 
 stutter: growstring
 	$(CC) -c stutter.c

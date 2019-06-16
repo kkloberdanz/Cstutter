@@ -23,6 +23,7 @@
 #define INSTRUCTIONS_H
 
 #include <stdio.h>
+#include <stdbool.h>
 
 typedef enum {
     NOP,
@@ -49,30 +50,10 @@ typedef enum {
     HALT
 } inst_t;
 
-char *inst_names[] = {
-    "NOP",
-    "PUSH",
-    "ADD",
-    "SUB",
-    "MUL",
-    "DIV",
-    "MOD",
-    "PRINTI",
-    "READI",
-    "PRINTC",
-    "READC",
-    "POP",
-    "LOAD",
-    "STORE",
-    "J",
-    "JZ",
-    "JLEZ",
-    "JNZ",
-    "CALL",
-    "RET",
-    "POPC",
-    "HALT",
-    NULL
-};
+extern const char *inst_names[];
+
+bool requires_immediate(inst_t inst);
+
+bool is_jump(inst_t inst);
 
 #endif /* INSTRUCTIONS_H */

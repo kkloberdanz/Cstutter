@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "linkedlist.h"
+#include "instructions.h"
 
 
 typedef enum ir_kind {
@@ -12,22 +13,11 @@ typedef enum ir_kind {
 } ir_kind;
 
 
-typedef enum ir_op {
-    IR_NOP,
-    IR_HALT,
-    IR_ADD,
-    IR_SUB,
-    IR_MUL,
-    IR_DIV,
-    IR_PUSH
-} ir_op;
-
-
 typedef struct Ir {
     ir_kind kind;
     char *repr;
     union {
-        ir_op op;
+        inst_t op;
         char *number;
     } value;
 } Ir;

@@ -75,10 +75,10 @@ static ASTNode *tree = NULL;
 prog        : expr                  { tree = $1 ; }
             ;
 
-expr        : expr PLUS expr        { $$ = make_operator_node(ADD, $1, $3) ; }
-            | expr MINUS expr       { $$ = make_operator_node(SUB, $1, $3) ; }
-            | expr TIMES expr       { $$ = make_operator_node(MUL, $1, $3) ; }
-            | expr OVER expr        { $$ = make_operator_node(DIV, $1, $3) ; }
+expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ; }
+            | expr MINUS expr       { $$ = make_operator_node(OP_MINUS, $1, $3) ; }
+            | expr TIMES expr       { $$ = make_operator_node(OP_TIMES, $1, $3) ; }
+            | expr OVER expr        { $$ = make_operator_node(OP_DIVIDE, $1, $3) ; }
             | LPAREN expr RPAREN    { $$ = $2 ; }
             | NUMBER                { $$ = make_leaf_node(make_number_obj(token_string)) ; }
             | ID                    { $$ = make_leaf_node(make_id_obj(make_string(token_string))) ; }

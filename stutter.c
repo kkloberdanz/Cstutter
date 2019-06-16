@@ -30,6 +30,7 @@
 #include "growstring.h"
 #include "linkedlist.h"
 #include "ir.h"
+#include "instructions.h"
 
 
 char token_string[MAX_TOKEN_SIZE+1];
@@ -194,29 +195,29 @@ Ir *get_op_ir(const Operator op) {
     }
     ir->kind = IR_OP;
     switch (op) {
-        case ADD:
-            ir->repr = "ADD";
-            ir->value.op = IR_ADD;
-            break;
-
-        case SUB:
-            ir->repr = "SUB";
-            ir->value.op = IR_SUB;
-            break;
-
-        case MUL:
-            ir->repr = "MUL";
-            ir->value.op = IR_MUL;
-            break;
-
-        case DIV:
-            ir->repr = "DIV";
-            ir->value.op = IR_DIV;
-            break;
-
-        case NOP:
+        case OP_NIL:
             ir->repr = "NOP";
-            ir->value.op = IR_NOP;
+            ir->value.op = NOP;
+            break;
+
+        case OP_PLUS:
+            ir->repr = "ADD";
+            ir->value.op = ADD;
+            break;
+
+        case OP_MINUS:
+            ir->repr = "SUB";
+            ir->value.op = SUB;
+            break;
+
+        case OP_TIMES:
+            ir->repr = "MUL";
+            ir->value.op = MUL;
+            break;
+
+        case OP_DIVIDE:
+            ir->repr = "DIV";
+            ir->value.op = DIV;
             break;
     }
     return ir;
@@ -282,7 +283,7 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
             Ir *ir = (Ir *)malloc(sizeof(Ir));
             ir->repr = "PUSH";
             ir->kind = IR_OP;
-            ir->value.op = IR_PUSH;
+            ir->value.op = PUSH;
             program = ll_new(ir);
             ll_append(program, get_ir_node(ast));
             break;

@@ -60,11 +60,11 @@ typedef enum {
 
 
 typedef enum {
-    NOP,
-    ADD,
-    SUB,
-    MUL,
-    DIV
+    OP_NIL,
+    OP_PLUS,
+    OP_MINUS,
+    OP_TIMES,
+    OP_DIVIDE
 } Operator;
 
 
