@@ -11,8 +11,8 @@ PUSH 108
 PUSH 101
 PUSH 104
 
-J _PrintASCII
-J _PrintNewline
+CALL _PrintASCII
+CALL _PrintNewline
 J _exit
 
 _PrintNewline:

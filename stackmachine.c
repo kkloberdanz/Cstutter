@@ -180,6 +180,11 @@ static int execute(int inst) {
             */
 
         case J:
+            pc = program[pc+1];
+            return 1;
+            break;
+
+        case CALL:
             set_call_stack();
             pc = program[pc+1];
 #ifdef DEBUG
@@ -189,7 +194,6 @@ static int execute(int inst) {
             break;
 
         case JZ:
-            set_call_stack();
             if (stack[sp] == 0) {
                 pc = program[pc+1];
 #ifdef DEBUG
@@ -205,7 +209,6 @@ static int execute(int inst) {
             break;
 
         case JLEZ:
-            set_call_stack();
             if (stack[sp] <= 0) {
                 pc = program[pc+1];
 #ifdef DEBUG
@@ -224,7 +227,6 @@ static int execute(int inst) {
 
         /* Jump if Not Zero */
         case JNZ:
-            set_call_stack();
             if (stack[sp] != 0) {
                 pc = program[pc+1];
 #ifdef DEBUG
