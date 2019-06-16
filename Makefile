@@ -2,17 +2,18 @@ CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 CLANG=clang -Wassign-enum -Wenum-conversion
 GCC=gcc
+SANITIZE=-fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
 
 OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine instructions
 
-release: CFLAGS += -Os
+release: OPTIM_FLAGS=-Os
 release: all
 
-debug: CFLAGS += -Og -g3 -DDEBUG
+debug: OPTIM_FLAGS=-Og -ggdb -DDEBUG $(SANITIZE)
 debug: all
 
-CC=$(GCC) $(CFLAGS) $(WARN_FLAGS)
+CC=$(GCC) $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
 
 all: $(OBJS)
 	$(CC) -o minic \

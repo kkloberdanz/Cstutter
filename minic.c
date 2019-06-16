@@ -151,6 +151,7 @@ ASTNode *make_operator_node(Operator op, ASTNode *left, ASTNode *right) {
 
 /* destructors */
 void destroy_obj(MinicObject *obj) {
+    free(obj->value.number_value);
     free(obj);
 }
 

@@ -3,7 +3,8 @@ a.out
 *.swp
 *.swo
 *.s
-stutter
+minic
+minias
 y.tab.c
 y.tab.h
 core
