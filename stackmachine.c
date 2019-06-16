@@ -143,8 +143,8 @@ static int execute(int inst) {
     }
 
 #ifdef DEBUG
-    printf("\nINST: %s, PC: %d, SP: %d, TOP: %d\n",
-           inst_names[inst], pc, sp, stack[sp]);
+    printf("\nINST: %s:%d, PC: %d, SP: %d, TOP: %d\n",
+           inst_names[inst], inst, pc, sp, stack[sp]);
 #endif
 
     switch (inst) {

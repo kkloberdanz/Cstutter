@@ -56,6 +56,8 @@ _tail_insert:
             node = node->left;
             goto _tail_insert;
         }
+    } else {
+        node->value = value;
     }
     return root;
 }

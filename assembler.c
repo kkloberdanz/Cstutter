@@ -180,6 +180,7 @@ break_for:
                     exit(EXIT_FAILURE);
                 }
                 inst->immediate = make_str(immediate);
+                i++;
             } else if (immediate != NULL) {
                 fprintf(stderr,
                         "%s does not take an immediate, found %s\n",
@@ -187,13 +188,9 @@ break_for:
                         immediate);
                 exit(EXIT_FAILURE);
             }
-            if (is_jump(inst->inst)) {
-                char *label = (char *)inst->immediate;
-                labels = bst_insert(labels, label, -1);
-            }
             cursor = ll_append(cursor, inst);
+            i++;
         }
-        i++;
     }
     populate_labels(instructions, labels);
     fclose(input_file);
@@ -243,8 +240,8 @@ int main(int argc, char **argv) {
     char *input_filename;
     char *output_filename;
     int len;
-
     PROGRAM_NAME = argv[0];
+
     if (argc != 3) {
         print_usage();
         exit(EXIT_FAILURE);
