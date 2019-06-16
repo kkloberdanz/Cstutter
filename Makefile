@@ -4,11 +4,11 @@ WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine
 
-debug: CFLAGS += -Og -g
-debug: all
-
 release: CFLAGS += -Os
 release: all
+
+debug: CFLAGS += -Og -g
+debug: all
 
 CC=gcc $(CFLAGS) $(WARN_FLAGS)
 
