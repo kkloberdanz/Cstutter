@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "linkedlist.h"
+#include "bst.h"
 
 typedef enum {
     false = 0,
@@ -48,6 +49,7 @@ static bool requires_immediate(inst_t inst) {
         case J:
         case JZ:
         case JNZ:
+        case JLEZ:
         case CALL:
             return true;
         default:
@@ -60,6 +62,7 @@ static bool is_jump(inst_t inst) {
         case J:
         case JZ:
         case JNZ:
+        case JLEZ:
         case CALL:
             return true;
         default:
@@ -150,34 +153,60 @@ static void strip(char *str) {
     }
 }
 
+void populate_labels(linkedlist *instructions, struct BST *jump_labels) {
+    linkedlist *cursor = instructions->next;
+    while (cursor) {
+        struct instruction *inst = cursor->value;
+        if (is_jump(inst->inst)) {
+            struct BST *label_node = bst_find(jump_labels, (char *)inst->immediate);
+            int label_location = label_node->value;
+            char str[11];
+            sprintf(str, "%d", label_location);
+            inst->immediate = make_str(str);
+        }
+        cursor = cursor->next;
+    }
+}
+
 static linkedlist *assemble(const char *input_filename) {
     FILE *input_file = fopen(input_filename, "r");
 
     char input_buffer[255] = {0};
     linkedlist *instructions = ll_new(make_inst("NOP"));
-    struct linkedlist *next = instructions;
-    struct instruction *inst;
+    struct linkedlist *cursor = instructions;
+    struct BST *jump_labels = NULL;
+    int i = 0;
     while (fgets(input_buffer, 255, input_file)) {
+        struct instruction *inst;
+        int len;
         strip(input_buffer);
-        inst = make_inst(input_buffer);
-        if (inst == NULL) {
-            fprintf(stderr, "not a valid instruction: %s\n", input_buffer);
-            exit(EXIT_FAILURE);
-        }
-        if (requires_immediate(inst->inst)) {
-            if (!fgets(input_buffer, 255, input_file)) {
-                fprintf(stderr, "%s\n", "failed to read input");
-            } else {
-                strip(input_buffer);
-                inst->immediate = make_str(input_buffer);
+        len = strlen(input_buffer) - 1;
+        if (input_buffer[len] == ':') {
+            input_buffer[len] = '\0';
+            jump_labels = bst_insert(jump_labels, make_str(input_buffer), i);
+        } else {
+            inst = make_inst(input_buffer);
+            if (inst == NULL) {
+                fprintf(stderr, "not a valid instruction: %s\n", input_buffer);
+                exit(EXIT_FAILURE);
             }
+            if (requires_immediate(inst->inst)) {
+                if (!fgets(input_buffer, 255, input_file)) {
+                    fprintf(stderr, "%s\n", "failed to read input");
+                } else {
+                    strip(input_buffer);
+                    inst->immediate = make_str(input_buffer);
+                }
+                i++;
+            }
+            if (is_jump(inst->inst)) {
+                jump_labels = bst_insert(jump_labels, (char *)inst->immediate, -1);
+            }
+            cursor = ll_append(cursor, inst);
         }
-        if (is_jump(inst->inst)) {
-            /* TODO: store lable in labels map to be resolved at the
-               end of parsing */
-        }
-        next = ll_append(next, inst);
+        i++;
     }
+    populate_labels(instructions, jump_labels);
     fclose(input_file);
     return instructions;
 }

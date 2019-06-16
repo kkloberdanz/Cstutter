@@ -21,11 +21,12 @@ main:
 bst:
 	$(CC) -c bst.c
 
-assembler: linkedlist
+assembler: linkedlist bst
 	$(CC) -c assembler.c
 	$(CC) -o sas \
 		     assembler.o \
-			 linkedlist.o
+			 linkedlist.o \
+			 bst.o
 
 stutter: growstring
 	$(CC) -c stutter.c
