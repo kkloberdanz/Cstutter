@@ -49,7 +49,7 @@ typedef enum {
     REAL_TYPE,
     BOOL_TYPE,
     STRING_TYPE
-} StutterType;
+} MinicType;
 
 
 typedef enum {
@@ -69,8 +69,8 @@ typedef enum {
 
 
 /* structs */
-typedef struct StutterObject {
-    StutterType type;
+typedef struct MinicObject {
+    MinicType type;
     union {
         char * number_value;
         char * real_value;
@@ -78,12 +78,12 @@ typedef struct StutterObject {
         char *string_value;
         char *symbol;
     } value;
-} StutterObject;
+} MinicObject;
 
 
 typedef struct ASTNode {
     ASTkind kind;
-    StutterObject *obj;
+    MinicObject *obj;
     Operator op;
     struct ASTNode *left;
     struct ASTNode *condition;
@@ -92,19 +92,19 @@ typedef struct ASTNode {
 
 
 /* constructors */
-StutterObject *make_number_obj(char *number);
-StutterObject *make_string_obj(char *str);
-StutterObject *make_id_obj(char *str);
+MinicObject *make_number_obj(char *number);
+MinicObject *make_string_obj(char *str);
+MinicObject *make_id_obj(char *str);
 char *make_string(char *str);
 
 ASTNode *make_ast_node(const ASTkind, /* base constructor */
-                       StutterObject *,
+                       MinicObject *,
                        const Operator,
                        ASTNode *,
                        ASTNode *,
                        ASTNode *);
 
-ASTNode *make_leaf_node(StutterObject *); /* just holds minic object */
+ASTNode *make_leaf_node(MinicObject *); /* just holds minic object */
 
 ASTNode *make_operator_node(Operator,  /* holds operator and child items */
                             ASTNode *, /* to operate on */
@@ -113,7 +113,7 @@ ASTNode *make_operator_node(Operator,  /* holds operator and child items */
 
 
 /* destructors */
-void destroy_obj(StutterObject *);
+void destroy_obj(MinicObject *);
 void destroy_ast_node(ASTNode *);
 
 
@@ -127,7 +127,7 @@ ASTNode *parse(void);
 
 /* code generation */
 char *get_op_str(const Operator op);
-char *get_op_val(char *str, const StutterObject *obj);
+char *get_op_val(char *str, const MinicObject *obj);
 int emit(FILE *, const ASTNode *);
 
 

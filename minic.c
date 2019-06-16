@@ -36,10 +36,10 @@ char token_string[MAX_TOKEN_SIZE+1];
 
 
 /* constructors */
-StutterObject *make_number_obj(char *n) {
-    StutterObject *obj;
+MinicObject *make_number_obj(char *n) {
+    MinicObject *obj;
     int len_n;
-    if ((obj = (StutterObject *)malloc(sizeof(StutterObject))) == NULL) {
+    if ((obj = (MinicObject *)malloc(sizeof(MinicObject))) == NULL) {
         fprintf(stderr, "failed to allocate memory");
         return NULL;
     }
@@ -52,9 +52,9 @@ StutterObject *make_number_obj(char *n) {
 }
 
 
-StutterObject *make_string_obj(char *str) {
-    StutterObject *obj;
-    if ((obj = (StutterObject *)malloc(sizeof(StutterObject))) == NULL) {
+MinicObject *make_string_obj(char *str) {
+    MinicObject *obj;
+    if ((obj = (MinicObject *)malloc(sizeof(MinicObject))) == NULL) {
         fprintf(stderr, "failed to allocate memory");
         return NULL;
     }
@@ -64,9 +64,9 @@ StutterObject *make_string_obj(char *str) {
 }
 
 
-StutterObject *make_id_obj(char *symb) {
-    StutterObject *obj;
-    if ((obj = (StutterObject *)malloc(sizeof(StutterObject))) == NULL) {
+MinicObject *make_id_obj(char *symb) {
+    MinicObject *obj;
+    if ((obj = (MinicObject *)malloc(sizeof(MinicObject))) == NULL) {
         fprintf(stderr, "failed to allocate memory");
         return NULL;
     }
@@ -88,7 +88,7 @@ char *make_string(char *str) {
 
 
 ASTNode *make_ast_node(const ASTkind kind,
-                       StutterObject *obj,
+                       MinicObject *obj,
                        const Operator op,
                        ASTNode *left_node,
                        ASTNode *condition,
@@ -137,7 +137,7 @@ ASTNode *make_ast_node(const ASTkind kind,
 }
 
 
-ASTNode *make_leaf_node(StutterObject *obj) {
+ASTNode *make_leaf_node(MinicObject *obj) {
     ASTNode *node = make_ast_node(LEAF, obj, OP_NIL, NULL, NULL, NULL);
     return node;
 }
@@ -150,7 +150,7 @@ ASTNode *make_operator_node(Operator op, ASTNode *left, ASTNode *right) {
 
 
 /* destructors */
-void destroy_obj(StutterObject *obj) {
+void destroy_obj(MinicObject *obj) {
     free(obj);
 }
 
@@ -223,7 +223,7 @@ static Ir *get_op_ir(const Operator op) {
 }
 
 
-char *get_op_val(char *str, const StutterObject *obj) {
+char *get_op_val(char *str, const MinicObject *obj) {
     switch (obj->type) {
         case NUMBER_TYPE:
             sprintf(str, "%s", obj->value.number_value);

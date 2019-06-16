@@ -105,4 +105,4 @@ clean:
 	rm -f testreport.log
 	rm -f *_test
 	rm -f stackmachine
-	rm -f sas
+	rm -f minias
