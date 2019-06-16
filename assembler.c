@@ -25,36 +25,12 @@
 
 #include "linkedlist.h"
 #include "bst.h"
+#include "instructions.h"
 
 typedef enum {
     false = 0,
     true = 1
 } bool;
-
-typedef enum {
-    NOP,
-    PUSH,
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    MOD,
-    PRINTI,
-    READI,
-    PRINTC,
-    READC,
-    POP,
-    LOAD,
-    STORE,
-    J,
-    JZ,
-    JLEZ,
-    JNZ,
-    CALL,
-    RET,
-    POPC,
-    HALT = 999999
-} inst_t;
 
 struct instruction {
     inst_t inst;
