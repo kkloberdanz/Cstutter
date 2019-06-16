@@ -14,7 +14,7 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
- * File: stutter.h
+ * File: minic.h
  */
 
 
@@ -104,7 +104,7 @@ ASTNode *make_ast_node(const ASTkind, /* base constructor */
                        ASTNode *,
                        ASTNode *);
 
-ASTNode *make_leaf_node(StutterObject *); /* just holds stutter object */
+ASTNode *make_leaf_node(StutterObject *); /* just holds minic object */
 
 ASTNode *make_operator_node(Operator,  /* holds operator and child items */
                             ASTNode *, /* to operate on */

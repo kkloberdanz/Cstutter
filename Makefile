@@ -3,7 +3,7 @@ WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 CLANG=clang -Wassign-enum -Wenum-conversion
 GCC=gcc
 
-OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
+OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine instructions
 
 release: CFLAGS += -Os
@@ -15,9 +15,9 @@ debug: all
 CC=$(GCC) $(CFLAGS) $(WARN_FLAGS)
 
 all: $(OBJS)
-	$(CC) -o stutter \
+	$(CC) -o minic \
              main.o \
-			 stutter.o \
+			 minic.o \
 			 linkedlist.o \
 			 instructions.o \
 			 ir.o \
@@ -36,7 +36,7 @@ bst:
 
 assembler: linkedlist bst instructions
 	$(CC) -c assembler.c
-	$(CC) -o sas \
+	$(CC) -o minias \
 		     assembler.o \
 			 linkedlist.o \
 			 bst.o \
@@ -45,8 +45,8 @@ assembler: linkedlist bst instructions
 instructions:
 	$(CC) -c instructions.c
 
-stutter:
-	$(CC) -c stutter.c
+minic:
+	$(CC) -c minic.c
 
 growstring:
 	$(CC) -c growstring.c
@@ -98,7 +98,7 @@ build_gs_test:
 
 clean:
 	rm -f *.o
-	rm -f stutter
+	rm -f minic
 	rm -f lex.yy.c
 	rm -f y.tab.c
 	rm -f y.tab.h
