@@ -86,6 +86,21 @@ static void populate_labels(linkedlist *instructions, struct BST *labels) {
     }
 }
 
+static bool is_ignored_char(const char c) {
+    return c == ' ' || c == ';' || c == '\n';
+}
+
+static void remove_trailing_chars(char *instruction) {
+    while (*instruction) {
+        if (is_ignored_char(*instruction)) {
+            *instruction = '\0';
+            return;
+        } else {
+            instruction++;
+        }
+    }
+}
+
 static linkedlist *assemble(const char *input_filename) {
     char input_buffer[255] = {0};
     linkedlist *instructions = ll_new(make_inst("NOP"));
@@ -103,26 +118,51 @@ static linkedlist *assemble(const char *input_filename) {
         int len;
         int j;
         char *immediate = NULL;
-        len = strlen(input_buffer) - 1;
+        char *instruction = input_buffer;
+
+        while (*instruction == ' ' || *instruction == '\t') {
+            instruction++;
+        }
+
+        if (*instruction == '\n') {
+            /* blank line */
+            continue;
+        }
+
+        len = strlen(instruction) - 1;
         for (j = 0; j <= len; j++) {
-            while (input_buffer[j] == ' ') {
-                input_buffer[j] = '\0';
+            while (instruction[j] == ' ') {
+                instruction[j] = '\0';
                 j++;
-                immediate = input_buffer + j;
+                immediate = instruction + j;
+                remove_trailing_chars(immediate);
+                goto break_for;
             }
 
-            if (input_buffer[j] == '\n') {
-                input_buffer[j] = '\0';
+            if (instruction[j] == '\n' || instruction[j] == ';') {
+                instruction[j] = '\0';
                 break;
             }
         }
-        if (input_buffer[len] == ':') {
-            input_buffer[len] = '\0';
-            labels = bst_insert(labels, make_str(input_buffer), i);
+break_for:
+        if (immediate != NULL && *immediate == '\0') {
+            immediate  = NULL;
+        }
+#ifdef DEBUG
+        if (immediate) {
+            printf("instruction = '%s', immediate = '%s'\n",
+                    instruction, immediate);
         } else {
-            inst = make_inst(input_buffer);
+            printf("instruction = '%s'\n", instruction);
+        }
+#endif
+        if (instruction[len-1] == ':') {
+            instruction[len-1] = '\0';
+            labels = bst_insert(labels, make_str(instruction), i);
+        } else {
+            inst = make_inst(instruction);
             if (inst == NULL) {
-                fprintf(stderr, "not a valid instruction: %s\n", input_buffer);
+                fprintf(stderr, "not a valid instruction: %s\n", instruction);
                 exit(EXIT_FAILURE);
             }
             if (requires_immediate(inst->inst)) {
@@ -134,6 +174,12 @@ static linkedlist *assemble(const char *input_filename) {
                     exit(EXIT_FAILURE);
                 }
                 inst->immediate = make_str(immediate);
+            } else if (immediate != NULL) {
+                fprintf(stderr,
+                        "%s does not take an immediate, found %s\n",
+                        instruction,
+                        immediate);
+                exit(EXIT_FAILURE);
             }
             if (is_jump(inst->inst)) {
                 char *label = (char *)inst->immediate;

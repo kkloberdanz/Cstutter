@@ -87,7 +87,11 @@ static int get_num_lines(char* filename) {
     int count = 0;
     char c;
     fp = fopen(filename, "r");
-    while ( (c = fgetc(fp)) != EOF) {
+    if (fp == NULL) {
+        fprintf(stderr, "not a file: %s\n", filename);
+        exit(EXIT_FAILURE);
+    }
+    while ((c = fgetc(fp)) != EOF) {
         if (c == '\n') {
             count++;
         }
@@ -139,11 +143,8 @@ static int execute(int inst) {
     }
 
 #ifdef DEBUG
-    /*printf("%d\n", inst);*/
-    if (inst != HALT) {
-        printf("\nINST: %s, PC: %d, SP: %d, TOP: %d\n",
-                inst_names[inst], pc, sp, stack[sp]);
-    }
+    printf("\nINST: %s, PC: %d, SP: %d, TOP: %d\n",
+           inst_names[inst], pc, sp, stack[sp]);
 #endif
 
     switch (inst) {
@@ -365,6 +366,7 @@ int main(int argc, char** argv) {
 
     load_code_from_file(program, argv[1]);
 #ifdef DEBUG
+    fprintf(stderr, "DEBUG MODE\n");
     print_array(program, num_lines);
 #endif
 

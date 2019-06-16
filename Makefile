@@ -1,6 +1,7 @@
 CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 CLANG=clang -Wassign-enum -Wenum-conversion
+GCC=gcc
 
 OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine instructions
@@ -8,10 +9,10 @@ OBJS=lexer parser stutter main linkedlist ir assembler growstring linkedlist \
 release: CFLAGS += -Os
 release: all
 
-debug: CFLAGS += -Og -g3
+debug: CFLAGS += -Og -g3 -DDEBUG
 debug: all
 
-CC=$(CLANG) $(CFLAGS) $(WARN_FLAGS)
+CC=$(GCC) $(CFLAGS) $(WARN_FLAGS)
 
 all: $(OBJS)
 	$(CC) -o stutter \
@@ -26,9 +27,9 @@ all: $(OBJS)
 main:
 	$(CC) -c main.c
 
-stackmachine:
+stackmachine: instructions
 	$(CC) -c stackmachine.c
-	$(CC) -o stackmachine stackmachine.o
+	$(CC) -o stackmachine stackmachine.o instructions.o
 
 bst:
 	$(CC) -c bst.c

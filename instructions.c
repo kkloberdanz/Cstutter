@@ -30,7 +30,6 @@ const char *inst_names[] = {
     "DIV",
     "MOD",
     "PRINTI",
-    "READI",
     "PRINTC",
     "READC",
     "POP",

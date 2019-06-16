@@ -34,7 +34,6 @@ typedef enum {
     DIV,
     MOD,
     PRINTI,
-    READI,
     PRINTC,
     READC,
     POP,
