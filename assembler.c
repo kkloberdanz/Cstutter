@@ -111,13 +111,13 @@ static void strip(char *str) {
     }
 }
 
-static void populate_labels(linkedlist *instructions, struct BST *jump_labels) {
+static void populate_labels(linkedlist *instructions, struct BST *labels) {
     linkedlist *cursor = instructions->next;
     while (cursor) {
         struct instruction *inst = cursor->value;
         if (is_jump(inst->inst)) {
             char *label = (char *)inst->immediate;
-            struct BST *label_node = bst_find(jump_labels, label);
+            struct BST *label_node = bst_find(labels, label);
             int label_location = label_node->value;
             char str[11];
             sprintf(str, "%d", label_location);
@@ -133,7 +133,7 @@ static linkedlist *assemble(const char *input_filename) {
     char input_buffer[255] = {0};
     linkedlist *instructions = ll_new(make_inst("NOP"));
     struct linkedlist *cursor = instructions;
-    struct BST *jump_labels = NULL;
+    struct BST *labels = NULL;
     int i = 0;
     while (fgets(input_buffer, 255, input_file)) {
         struct instruction *inst;
@@ -142,7 +142,7 @@ static linkedlist *assemble(const char *input_filename) {
         len = strlen(input_buffer) - 1;
         if (input_buffer[len] == ':') {
             input_buffer[len] = '\0';
-            jump_labels = bst_insert(jump_labels, make_str(input_buffer), i);
+            labels = bst_insert(labels, make_str(input_buffer), i);
         } else {
             inst = make_inst(input_buffer);
             if (inst == NULL) {
@@ -160,13 +160,13 @@ static linkedlist *assemble(const char *input_filename) {
             }
             if (is_jump(inst->inst)) {
                 char *label = (char *)inst->immediate;
-                jump_labels = bst_insert(jump_labels, label, -1);
+                labels = bst_insert(labels, label, -1);
             }
             cursor = ll_append(cursor, inst);
         }
         i++;
     }
-    populate_labels(instructions, jump_labels);
+    populate_labels(instructions, labels);
     fclose(input_file);
     return instructions;
 }
