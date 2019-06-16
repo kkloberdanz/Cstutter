@@ -49,9 +49,10 @@ static int sp = 0; /* Stack Pointer */
 static int cp = 0; /* Call Pointer
                Return address returns address after jump instructions */
 
-static int sr = PROG_SIZE; /* Stack Register / Save Register
-                              Used for saving data to the stack */
+/* Stack Register Save Register used for saving data to the stack */
+/*static int sr = PROG_SIZE;*/
 
+#ifdef DEBUG
 static void print_call_stack() {
     int i;
     printf("CP = %d\n", cp);
@@ -59,6 +60,7 @@ static void print_call_stack() {
         printf("CALL STACK[%d] = %d\n", i, call_stack[i]);
     }
 }
+#endif
 
 static void set_call_stack() {
     call_stack[cp] = pc + 2;
@@ -338,6 +340,7 @@ static void loop() {
     }
 }
 
+#ifdef DEBUG
 static void print_array(int* arr, int size) {
     int i;
     printf("[");
@@ -346,6 +349,7 @@ static void print_array(int* arr, int size) {
     }
     printf("%d]\n", arr[i]);
 }
+#endif
 
 int main(int argc, char** argv) {
 

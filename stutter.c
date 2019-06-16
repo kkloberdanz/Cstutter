@@ -114,7 +114,7 @@ ASTNode *make_ast_node(const ASTkind kind,
 
         case CONDITIONAL:
             node->obj = NULL;
-            node->op = NOP;
+            node->op = OP_NIL;
             node->left = left_node; /* the true path */
             node->condition = condition; /* the expr to evaluate */
             node->right = right_node; /* the false path */
@@ -139,7 +139,7 @@ ASTNode *make_ast_node(const ASTkind kind,
 
 
 ASTNode *make_leaf_node(StutterObject *obj) {
-    ASTNode *node = make_ast_node(LEAF, obj, NOP, NULL, NULL, NULL);
+    ASTNode *node = make_ast_node(LEAF, obj, OP_NIL, NULL, NULL, NULL);
     return node;
 }
 
