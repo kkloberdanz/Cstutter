@@ -8,12 +8,15 @@ OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
 	 bst stackmachine instructions
 
 release: OPTIM_FLAGS=-Os
-release: all
+release: production
 
 debug: OPTIM_FLAGS=-Og -ggdb -DDEBUG $(SANITIZE)
 debug: all
 
 CC=$(GCC) $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
+
+production: all
+	strip minic stackmachine minias
 
 all: $(OBJS)
 	$(CC) -o minic \
