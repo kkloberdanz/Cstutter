@@ -60,7 +60,7 @@ ir:
 
 lexer: parser
 	lex tokens.l
-	$(CC) -c lex.yy.c -Wno-unused-function
+	$(CC) -c lex.yy.c -Wno-unused-function -Wno-sign-compare
 
 parser:
 	yacc -y -d grammar.y
