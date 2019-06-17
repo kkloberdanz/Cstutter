@@ -85,7 +85,7 @@ static void print_stack() {
 static int get_num_lines(char* filename) {
     FILE *fp;
     int count = 0;
-    char c;
+    int c;
     fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "not a file: %s\n", filename);
@@ -103,21 +103,24 @@ static int get_num_lines(char* filename) {
 static void load_code_from_file(int *code, char *filename) {
     FILE *fp;
     char buff[255];
-    char c;
+    int c;
     int count = 0;
     int i = 0;
 
     fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "not a file: %s\n", filename);
+    }
 
     printf("Reading from: %s\n", filename);
-    while ( (c = fgetc(fp)) != EOF) {
+    while ((c = fgetc(fp)) != EOF) {
         if (c == '\n') {
             buff[count] = '\0';
             count = 0;
             code[i] = atoi(buff);
             i++;
         }
-        buff[count] = c;
+        buff[count] = (char)c;
         count++;
     }
     fclose(fp);
