@@ -9,7 +9,8 @@
 
 typedef enum ir_kind {
     IR_OP,
-    IR_NUMBER
+    IR_NUMBER,
+    IR_LABEL
 } ir_kind;
 
 

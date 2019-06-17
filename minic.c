@@ -338,6 +338,25 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
              * _end_if:       ; continue with program
              * ...
              */
+
+            /* eval condition */
+            program = codegen_stack_machine(ast->condition);
+
+            /* TODO: append jump to else if 0 */
+
+            /* TODO: append if label
+             * (not needed but helps for clarity in ASM) */
+
+            /* TODO: append eval left */
+
+            /* TODO: append jump to end if */
+
+            /* TODO: append else label */
+
+            /* TODO: append eval right */
+
+            /* TODO: append end if label */
+
             fprintf(stderr, "CONDITIONAL not implemented");
             exit(EXIT_FAILURE);
             break;

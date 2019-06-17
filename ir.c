@@ -1,10 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 
 #include "ir.h"
 #include "linkedlist.h"
 #include "instructions.h"
+
+
+static char *make_str(const char *str) {
+    char *dst = malloc(strlen(str) + 1);
+    strcpy(dst, str);
+    return dst;
+}
 
 
 void ir_print_program(FILE *output, const linkedlist *program) {
@@ -27,4 +35,15 @@ linkedlist *ir_halt_program(linkedlist* program) {
     ir->value.op = HALT;
     ll_append(program, ir);
     return program;
+}
+
+
+Ir *ir_new_label(const char *label) {
+    Ir *ir = malloc(sizeof(struct Ir));
+    if (ir == NULL) {
+        fprintf(stderr, "out of memory\n");
+    }
+    ir->kind = IR_LABEL;
+    ir->repr = make_str(label);
+    return ir;
 }
