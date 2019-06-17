@@ -149,6 +149,12 @@ ASTNode *make_operator_node(Operator op, ASTNode *left, ASTNode *right) {
 }
 
 
+ASTNode *make_conditional_node(ASTNode *left, ASTNode *condition, ASTNode *right) {
+    ASTNode *node = make_ast_node(CONDITIONAL, NULL, OP_NIL, left, condition, right);
+    return node;
+}
+
+
 /* destructors */
 void destroy_obj(MinicObject *obj) {
     free(obj->value.number_value);
@@ -219,6 +225,41 @@ static Ir *get_op_ir(const Operator op) {
             ir->repr = "DIV";
             ir->value.op = DIV;
             break;
+
+        case OP_GE:
+            ir->repr = "GE";
+            ir->value.op = GE;
+            break;
+
+        case OP_GT:
+            ir->repr = "GT";
+            ir->value.op = GT;
+            break;
+
+        case OP_EQ:
+            ir->repr = "EQ";
+            ir->value.op = EQ;
+            break;
+
+        case OP_NE:
+            ir->repr = "NE";
+            ir->value.op = NE;
+            break;
+
+        case OP_LT:
+            ir->repr = "LT";
+            ir->value.op = LT;
+            break;
+
+        case OP_LE:
+            ir->repr = "LE";
+            ir->value.op = LE;
+            break;
+
+        case OP_NOT:
+            ir->repr = "NOT";
+            ir->value.op = NOT;
+            break;
     }
     return ir;
 }
@@ -268,6 +309,35 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
     linkedlist *program = NULL;
     switch (ast->kind) {
         case CONDITIONAL:
+            /*
+             * evaluate condition
+             * if condition == 1
+             *     then do left sub-tree
+             * else
+             *     then do right sub-tree
+             *
+             * if (1 > 0) {
+             *     putchar('y');
+             * } else {
+             *     putchar('n');
+             * }
+             *
+             * PUSH 1         ; (1 > 0)
+             * PUSH 0
+             * GT             ; 1 if true, 0 if false
+             *
+             * JZ _else       ; jump if 0 (i.e. if false, goto else block)
+             * _if:           ; if block
+             *     PUSH 'y'
+             *     PRINTC
+             *     J _end_if  ; break out of if (skip over the else block)
+             *
+             * _else:
+             *     PUSH 'n'
+             *     PRINTC
+             * _end_if:       ; continue with program
+             * ...
+             */
             fprintf(stderr, "CONDITIONAL not implemented");
             exit(EXIT_FAILURE);
             break;

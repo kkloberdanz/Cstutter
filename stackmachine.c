@@ -294,12 +294,59 @@ static int execute(int inst) {
             }
             break;
 
-
         case MOD:
             {
             int a = stack[sp--];
             int b = stack[sp];
             stack[sp] = a % b;
+            }
+            break;
+
+        case EQ:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a == b;
+            }
+            break;
+
+        case NE:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a != b;
+            }
+            break;
+
+        case LT:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a < b;
+            }
+            break;
+
+        case LE:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a <= b;
+            }
+            break;
+
+        case GT:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a > b;
+            }
+            break;
+
+        case GE:
+            {
+            int a = stack[sp--];
+            int b = stack[sp];
+            stack[sp] = a >= b;
             }
             break;
 

@@ -29,6 +29,13 @@ const char *inst_names[] = {
     "MUL",
     "DIV",
     "MOD",
+    "EQ",
+    "NE",
+    "LT",
+    "GT",
+    "LE",
+    "GE",
+    "NOT",
     "PRINTI",
     "PRINTC",
     "READC",
@@ -42,8 +49,7 @@ const char *inst_names[] = {
     "CALL",
     "RET",
     "POPC",
-    "HALT",
-    NULL
+    "HALT"
 };
 
 bool requires_immediate(inst_t inst) {

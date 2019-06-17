@@ -40,11 +40,13 @@ whitespace  [ \t]+
 
 %%
 
-":="          { return ASSIGN; }
-"="           { return EQ; }
+"="           { return ASSIGN; }
+"=="          { return EQ; }
+">"           { return GT; }
+"<"           { return LT; }
 ">="          { return GE; }
 "<="          { return LE; }
-"<>"          { return NE; }
+"!="          { return NE; }
 "if"          { return IF; }
 "then"        { return THEN; }
 "else"        { return ELSE; }
@@ -55,6 +57,8 @@ whitespace  [ \t]+
 "-"           { return MINUS; }
 "*"           { return TIMES; }
 "/"           { return OVER; }
+"{"           { return LBRACE; }
+"}"           { return RBRACE; }
 {number}      { return NUMBER; }
 {identifier}  { return ID; }
 {newline}     { yylineno++; }

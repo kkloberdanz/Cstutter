@@ -57,6 +57,7 @@ static ASTNode *tree = NULL;
 %token LT
 %token GE
 %token LE
+%token GT
 %token PLUS
 %token MINUS
 %token TIMES
@@ -64,6 +65,8 @@ static ASTNode *tree = NULL;
 %token EXPONENT
 %token LPAREN
 %token RPAREN
+%token LBRACE
+%token RBRACE
 %token SEMI
 
 
@@ -75,13 +78,28 @@ static ASTNode *tree = NULL;
 prog        : expr                  { tree = $1 ; }
             ;
 
+/*
+if_stmt     : IF LPAREN expr RPAREN LBRACE stmts RBRACE ELSE stmts { $$ = make_conditional_node(
+                                                                              ) }
+            ;
+*/
+
 expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ; }
             | expr MINUS expr       { $$ = make_operator_node(OP_MINUS, $1, $3) ; }
             | expr TIMES expr       { $$ = make_operator_node(OP_TIMES, $1, $3) ; }
             | expr OVER expr        { $$ = make_operator_node(OP_DIVIDE, $1, $3) ; }
+            | bool_expr             { $$ = $1 ; }
             | LPAREN expr RPAREN    { $$ = $2 ; }
             | NUMBER                { $$ = make_leaf_node(make_number_obj(token_string)) ; }
             | ID                    { $$ = make_leaf_node(make_id_obj(make_string(token_string))) ; }
+            ;
+
+bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
+            | expr LT expr          { $$ = make_operator_node(OP_LT, $1, $3) ; }
+            | expr LE expr          { $$ = make_operator_node(OP_LE, $1, $3) ; }
+            | expr GT expr          { $$ = make_operator_node(OP_GT, $1, $3) ; }
+            | expr GE expr          { $$ = make_operator_node(OP_GE, $1, $3) ; }
+            | expr NE expr          { $$ = make_operator_node(OP_NE, $1, $3) ; }
             ;
 
 %%

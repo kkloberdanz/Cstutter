@@ -64,7 +64,14 @@ typedef enum {
     OP_PLUS,
     OP_MINUS,
     OP_TIMES,
-    OP_DIVIDE
+    OP_DIVIDE,
+    OP_EQ,
+    OP_LT,
+    OP_LE,
+    OP_GT,
+    OP_GE,
+    OP_NE,
+    OP_NOT
 } Operator;
 
 
@@ -110,7 +117,9 @@ ASTNode *make_operator_node(Operator,  /* holds operator and child items */
                             ASTNode *, /* to operate on */
                             ASTNode *);
 
-
+ASTNode *make_conditional_node(ASTNode *left,
+                               ASTNode *condition,
+                               ASTNode *right);
 
 /* destructors */
 void destroy_obj(MinicObject *);
