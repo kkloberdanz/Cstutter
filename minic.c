@@ -307,8 +307,10 @@ static Ir *get_ir_node(const ASTNode *ast) {
 /* code generation */
 static linkedlist *codegen_stack_machine(const ASTNode *ast) {
     linkedlist *program = NULL;
+    static int current_label = 0;
     switch (ast->kind) {
         case CONDITIONAL:
+        {
             /*
              * evaluate condition
              * if condition == 1
@@ -338,28 +340,44 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
              * _end_if:       ; continue with program
              * ...
              */
+            char else_label[255];
+            char target_else_label[255];
+            char if_label[255];
+            char end_if_label[255];
+            char target_end_if[255];
+            sprintf(else_label, "_else_%d", current_label);
+            sprintf(target_else_label, "_else_%d:", current_label);
+            sprintf(if_label, "_if_%d:", current_label);
+            sprintf(end_if_label, "_end_if_%d", current_label);
+            sprintf(target_end_if, "_end_if_%d:", current_label);
 
             /* eval condition */
             program = codegen_stack_machine(ast->condition);
 
-            /* TODO: append jump to else if 0 */
+            /* append jump to else if 0 */
+            program = ll_append(program, ir_new_jump_inst(JZ, else_label));
 
-            /* TODO: append if label
-             * (not needed but helps for clarity in ASM) */
+            /* append if label (not needed but helps for clarity in ASM) */
+            program = ll_append(program, ir_new_label(if_label));
 
-            /* TODO: append eval left */
+            /* concat eval left */
+            ll_concat(program, codegen_stack_machine(ast->left));
 
-            /* TODO: append jump to end if */
+            /* append jump to end if */
+            program = ll_append(program, ir_new_jump_inst(J, end_if_label));
 
-            /* TODO: append else label */
+            /* append else label */
+            program = ll_append(program, ir_new_label(target_else_label));
 
-            /* TODO: append eval right */
+            /* concat eval right */
+            ll_concat(program, codegen_stack_machine(ast->right));
 
-            /* TODO: append end if label */
+            /* append end if label */
+            program = ll_append(program, ir_new_label(target_end_if));
 
-            fprintf(stderr, "CONDITIONAL not implemented");
-            exit(EXIT_FAILURE);
+            current_label++;
             break;
+        }
 
         case OPERATOR:
             program = codegen_stack_machine(ast->right);

@@ -5,7 +5,7 @@ GCC=gcc
 SANITIZE=-fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
 
 OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
-	 bst stackmachine instructions
+	 bst stackmachine instructions util
 
 release: OPTIM_FLAGS=-Os
 release: production
@@ -26,24 +26,29 @@ all: $(OBJS)
 			 instructions.o \
 			 ir.o \
 			 lex.yy.o \
+			 util.o \
 			 y.tab.o -lfl -ly
 
 main:
 	$(CC) -c main.c
 
-stackmachine: instructions
+util:
+	$(CC) -c util.c
+
+stackmachine: instructions util
 	$(CC) -c stackmachine.c
-	$(CC) -o stackmachine stackmachine.o instructions.o
+	$(CC) -o stackmachine stackmachine.o instructions.o util.o
 
 bst:
 	$(CC) -c bst.c
 
-assembler: linkedlist bst instructions
+assembler: linkedlist bst instructions util
 	$(CC) -c assembler.c
 	$(CC) -o minias \
 		     assembler.o \
 			 linkedlist.o \
 			 bst.o \
+			 util.o \
 			 instructions.o
 
 instructions:

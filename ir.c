@@ -6,13 +6,7 @@
 #include "ir.h"
 #include "linkedlist.h"
 #include "instructions.h"
-
-
-static char *make_str(const char *str) {
-    char *dst = malloc(strlen(str) + 1);
-    strcpy(dst, str);
-    return dst;
-}
+#include "util.h"
 
 
 void ir_print_program(FILE *output, const linkedlist *program) {
@@ -29,7 +23,7 @@ void ir_print_program(FILE *output, const linkedlist *program) {
 
 
 linkedlist *ir_halt_program(linkedlist* program) {
-    Ir *ir = (Ir *)malloc(sizeof(Ir));
+    Ir *ir = (Ir *)minic_malloc(sizeof(Ir));
     ir->kind = IR_OP;
     ir->repr = "HALT";
     ir->value.op = HALT;
@@ -39,11 +33,24 @@ linkedlist *ir_halt_program(linkedlist* program) {
 
 
 Ir *ir_new_label(const char *label) {
-    Ir *ir = malloc(sizeof(struct Ir));
-    if (ir == NULL) {
-        fprintf(stderr, "out of memory\n");
-    }
+    Ir *ir = minic_malloc(sizeof(struct Ir));
     ir->kind = IR_LABEL;
     ir->repr = make_str(label);
+    return ir;
+}
+
+
+struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
+    char *tmp_str;
+    const char *inst_name;
+    struct Ir *ir = minic_malloc(sizeof(struct Ir));
+    inst_name = inst_names[instruction];
+
+    /* allocate enough memory for \0 and a space between the two strings */
+    tmp_str = minic_malloc(strlen(inst_name) + strlen(label) + 2);
+
+    sprintf(tmp_str, "%s %s", inst_name, label);
+    ir->kind = IR_OP;
+    ir->repr = tmp_str;
     return ir;
 }

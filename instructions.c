@@ -52,6 +52,8 @@ const char *inst_names[] = {
     "HALT"
 };
 
+const int num_opcodes = sizeof(inst_names) / sizeof(char *);
+
 bool requires_immediate(inst_t inst) {
     switch (inst) {
         case PUSH:
