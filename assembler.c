@@ -137,12 +137,12 @@ static linkedlist *assemble(const char *input_filename) {
 
         len = strlen(instruction) - 1;
         for (j = 0; j <= len; j++) {
-            while (instruction[j] == ' ') {
+            if (instruction[j] == ' ') {
                 instruction[j] = '\0';
                 j++;
                 immediate = instruction + j;
                 remove_trailing_chars(immediate);
-                goto break_for;
+                break;
             }
 
             if (instruction[j] == '\n' || instruction[j] == ';') {
@@ -150,9 +150,9 @@ static linkedlist *assemble(const char *input_filename) {
                 break;
             }
         }
-break_for:
+
         if (immediate != NULL && *immediate == '\0') {
-            immediate  = NULL;
+            immediate = NULL;
         }
 #ifdef DEBUG
         if (immediate) {
@@ -170,17 +170,17 @@ break_for:
             if (inst == NULL) {
                 fprintf(stderr, "not a valid instruction: %s\n", instruction);
                 exit(EXIT_FAILURE);
-            }
-            if (requires_immediate(inst->inst)) {
+            } else if (requires_immediate(inst->inst)) {
                 if (immediate == NULL) {
                     fprintf(stderr,
                             "%s: syntax error: expecting immediate "
                             "value after %s on line %s:%d\n",
                             PROGRAM_NAME, inst->str, input_filename, i + 1);
                     exit(EXIT_FAILURE);
+                } else {
+                    inst->immediate = make_str(immediate);
+                    i++;
                 }
-                inst->immediate = make_str(immediate);
-                i++;
             } else if (immediate != NULL) {
                 fprintf(stderr,
                         "%s does not take an immediate, found %s\n",
