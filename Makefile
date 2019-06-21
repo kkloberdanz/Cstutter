@@ -13,6 +13,9 @@ release: production
 debug: OPTIM_FLAGS=-Og -ggdb -DDEBUG $(SANITIZE)
 debug: all
 
+valgrind: OPTIM_FLAGS=-Og -ggdb -DDEBUG
+valgrind: all
+
 CC=$(GCC) $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
 
 production: all

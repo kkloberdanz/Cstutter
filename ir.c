@@ -36,6 +36,7 @@ Ir *ir_new_label(const char *label) {
     Ir *ir = minic_malloc(sizeof(struct Ir));
     ir->kind = IR_LABEL;
     ir->repr = make_str(label);
+    ir->value.number = NULL;
     return ir;
 }
 
@@ -52,6 +53,7 @@ struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
     sprintf(tmp_str, "%s %s", inst_name, label);
     ir->kind = IR_JMP;
     ir->repr = tmp_str;
+    ir->value.number = NULL;
     return ir;
 }
 
