@@ -101,6 +101,7 @@ void bst_destroy(struct BST* node) {
     if (node != NULL) {
         bst_destroy(node->left);
         bst_destroy(node->right);
+        free(node->key);
         free(node);
     }
 }

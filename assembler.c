@@ -32,8 +32,8 @@ static char *PROGRAM_NAME = NULL;
 
 struct instruction {
     inst_t inst;
-    const char *immediate;
-    const char *str;
+    char *immediate;
+    char *str;
 };
 
 void print_usage() {
@@ -66,7 +66,7 @@ inst_found:
     return instruction;
 }
 
-static struct instruction *make_inst(const char *inst_str) {
+static struct instruction *make_inst(char *inst_str) {
     struct instruction *instruction = lookup_instruction(inst_str);
     return instruction;
 }
@@ -81,6 +81,7 @@ static void populate_labels(linkedlist *instructions, struct BST *labels) {
             int label_location = label_node->value;
             char str[11];
             sprintf(str, "%d", label_location);
+            free(inst->immediate);
             inst->immediate = make_str(str);
         }
         cursor = cursor->next;
@@ -188,6 +189,7 @@ static linkedlist *assemble(const char *input_filename) {
         }
     }
     populate_labels(instructions, labels);
+    bst_destroy(labels);
     fclose(input_file);
     return instructions;
 }
