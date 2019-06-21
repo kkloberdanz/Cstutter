@@ -97,9 +97,7 @@ void ll_free(linkedlist *list) {
         list = list->next;
         tmp->next = NULL;
 
-        if (tmp->value) {
-            free(tmp->value);
-        }
+        free(tmp->value);
         tmp->value = NULL;
         free(tmp);
     }

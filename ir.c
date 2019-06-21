@@ -24,8 +24,8 @@ void ir_print_program(FILE *output, const linkedlist *program) {
 
 linkedlist *ir_halt_program(linkedlist* program) {
     Ir *ir = (Ir *)minic_malloc(sizeof(Ir));
-    ir->kind = IR_OP;
-    ir->repr = "HALT";
+    ir->kind = IR_END;
+    ir->repr = make_str("HALT");
     ir->value.op = HALT;
     ll_append(program, ir);
     return program;
@@ -50,7 +50,29 @@ struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
     tmp_str = minic_malloc(strlen(inst_name) + strlen(label) + 2);
 
     sprintf(tmp_str, "%s %s", inst_name, label);
-    ir->kind = IR_OP;
+    ir->kind = IR_JMP;
     ir->repr = tmp_str;
     return ir;
+}
+
+
+void ir_free_list(linkedlist *ll) {
+    linkedlist *free_me = NULL;
+    while (ll) {
+        Ir *ir = ll->value;
+        switch (ir->kind) {
+            case IR_JMP:
+            case IR_END:
+            case IR_LABEL:
+                free(ir->repr);
+                ir->repr = NULL;
+                break;
+            default:
+                break;
+        }
+        free_me = ll;
+        ll = ll->next;
+        free(free_me);
+        free(ir);
+    }
 }

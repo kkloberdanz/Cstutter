@@ -414,6 +414,6 @@ int emit(FILE *output, const ASTNode *ast) {
     linkedlist *program = codegen_stack_machine(ast);
     program = ir_halt_program(program);
     ir_print_program(output, program);
-    ll_free(program);
+    ir_free_list(program);
     return 0;
 }

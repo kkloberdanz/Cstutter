@@ -9,6 +9,8 @@
 
 typedef enum ir_kind {
     IR_OP,
+    IR_JMP,
+    IR_END,
     IR_NUMBER,
     IR_LABEL
 } ir_kind;
@@ -28,5 +30,6 @@ void ir_print_program(FILE *output, const linkedlist *program);
 linkedlist *ir_halt_program(linkedlist* program);
 struct Ir *ir_new_jump_inst(inst_t instruction, const char *label);
 Ir *ir_new_label(const char *label);
+void ir_free_list(linkedlist *ll);
 
 #endif /* IR_H */
