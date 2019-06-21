@@ -149,7 +149,7 @@ ASTNode *make_operator_node(Operator op, ASTNode *left, ASTNode *right) {
 }
 
 
-ASTNode *make_conditional_node(ASTNode *left, ASTNode *condition, ASTNode *right) {
+ASTNode *make_conditional_node(ASTNode *condition, ASTNode *left, ASTNode *right) {
     ASTNode *node = make_ast_node(CONDITIONAL, NULL, OP_NIL, left, condition, right);
     return node;
 }
@@ -305,9 +305,10 @@ static Ir *get_ir_node(const ASTNode *ast) {
 
 
 /* code generation */
-static linkedlist *codegen_stack_machine(const ASTNode *ast) {
+static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_label) {
     linkedlist *program = NULL;
-    static int current_label = 0;
+    linkedlist *cursor = NULL;
+    printf("current_label = %d\n", current_label);
     switch (ast->kind) {
         case CONDITIONAL:
         {
@@ -352,36 +353,37 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
             sprintf(target_end_if, "_end_if_%d:", current_label);
 
             /* eval condition */
-            program = codegen_stack_machine(ast->condition);
+            program = rec_codegen_stack_machine(ast->condition, current_label + 1);
+            cursor = program;
 
             /* append jump to else if 0 */
-            program = ll_append(program, ir_new_jump_inst(JZ, else_label));
+            cursor = ll_append(cursor, ir_new_jump_inst(JZ, else_label));
 
             /* append if label (not needed but helps for clarity in ASM) */
-            program = ll_append(program, ir_new_label(if_label));
+            cursor = ll_append(cursor, ir_new_label(if_label));
 
             /* concat eval left */
-            ll_concat(program, codegen_stack_machine(ast->left));
+            ll_concat(cursor, rec_codegen_stack_machine(ast->left, current_label + 1));
 
             /* append jump to end if */
-            program = ll_append(program, ir_new_jump_inst(J, end_if_label));
+            cursor = ll_append(cursor, ir_new_jump_inst(J, end_if_label));
 
             /* append else label */
-            program = ll_append(program, ir_new_label(target_else_label));
+            cursor = ll_append(cursor, ir_new_label(target_else_label));
 
             /* concat eval right */
-            ll_concat(program, codegen_stack_machine(ast->right));
+            ll_concat(cursor, rec_codegen_stack_machine(ast->right, current_label + 1));
 
             /* append end if label */
-            program = ll_append(program, ir_new_label(target_end_if));
+            cursor = ll_append(cursor, ir_new_label(target_end_if));
 
             current_label++;
             break;
         }
 
         case OPERATOR:
-            program = codegen_stack_machine(ast->right);
-            ll_concat(program, codegen_stack_machine(ast->left));
+            program = rec_codegen_stack_machine(ast->right, current_label);
+            ll_concat(program, rec_codegen_stack_machine(ast->left, current_label));
             ll_append(program, get_op_ir(ast->op));
             break;
 
@@ -401,6 +403,11 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
             exit(EXIT_FAILURE);
     }
     return program;
+}
+
+
+static linkedlist *codegen_stack_machine(const ASTNode *ast) {
+    return rec_codegen_stack_machine(ast, 0);
 }
 
 

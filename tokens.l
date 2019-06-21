@@ -59,6 +59,7 @@ whitespace  [ \t]+
 "/"           { return OVER; }
 "{"           { return LBRACE; }
 "}"           { return RBRACE; }
+";"           { return SEMICOLON; }
 {number}      { return NUMBER; }
 {identifier}  { return ID; }
 {newline}     { yylineno++; }

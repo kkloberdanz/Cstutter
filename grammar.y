@@ -67,7 +67,7 @@ static ASTNode *tree = NULL;
 %token RPAREN
 %token LBRACE
 %token RBRACE
-%token SEMI
+%token SEMICOLON
 
 
 %left MINUS PLUS
@@ -75,14 +75,19 @@ static ASTNode *tree = NULL;
 %right EXPONENT        /* exponentiation */
 
 %%
-prog        : expr                  { tree = $1 ; }
+prog        : stmt                  { tree = $1 ; }
             ;
 
-/*
-if_stmt     : IF LPAREN expr RPAREN LBRACE stmts RBRACE ELSE stmts { $$ = make_conditional_node(
-                                                                              ) }
+stmt        : expr SEMICOLON        { $$ = $1 ; }
+            | if_stmt               { $$ = $1 ; }
             ;
-*/
+
+if_stmt     : IF LPAREN expr RPAREN LBRACE
+                  stmt
+              RBRACE ELSE LBRACE
+                  stmt
+              RBRACE { $$ = make_conditional_node($3, $6, $10) ; }
+            ;
 
 expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ; }
             | expr MINUS expr       { $$ = make_operator_node(OP_MINUS, $1, $3) ; }
