@@ -36,7 +36,6 @@ int fileno(FILE *stream);
 enum { MAX_TOKEN_SIZE=100 };
 extern char token_string[MAX_TOKEN_SIZE+1];
 
-
 /* embedded strings */
 static volatile char author[] = "Author: Kyle Kloberdanz";
 static volatile char license[] = "License: GNU GPLv3";
@@ -127,11 +126,11 @@ void destroy_ast_node(ASTNode *);
 
 
 /* lexer */
-int get_token(void);
+int get_token(FILE *source_file);
 
 
 /* parser */
-ASTNode *parse(void);
+ASTNode *parse(FILE *source_file);
 
 
 /* code generation */

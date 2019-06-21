@@ -21,28 +21,52 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #include "minic.h"
 
 
+bool is_c_src_file(char *filename, int len) {
+    return filename[len] == 'c' && filename[len-1] == '.';
+}
+
+
 int main(int argc, char **argv) {
     char *output_filename = NULL;
+    char *source_filename = NULL;
     FILE *output;
+    FILE *source_file;
     int exit_code;
+    int len = 0;
+    ASTNode *tree = NULL;
     if (argc != 2) {
         fprintf(stderr, "usage: %s FILENAME\n", argv[0]);
         return 1;
     } else {
-        ASTNode *tree = parse();
+        source_filename = argv[1];
+        len = strlen(source_filename) - 1;
+        if (!is_c_src_file(source_filename, len)) {
+            fprintf(stderr, "not a C source file: %s\n", source_filename);
+            exit(EXIT_FAILURE);
+        }
+        source_file = fopen(source_filename, "r");
+        if (source_file == NULL) {
+            fprintf(stderr, "no such file:%s\n", source_filename);
+            exit(EXIT_FAILURE);
+        }
+        tree = parse(source_file);
+        fclose(source_file);
 
         if (tree == NULL) {
             fprintf(stderr, "%s\n", "failed to parse input");
             exit(EXIT_FAILURE);
         }
 
-        output_filename = argv[1];
+        output_filename = make_string(source_filename);
+        output_filename[len] = 's';
         output = fopen(output_filename, "w");
+        free(output_filename);
 
         if (output == NULL) {
             fprintf(stderr, "%s\n", "failed to open output file");

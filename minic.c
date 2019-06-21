@@ -308,7 +308,6 @@ static Ir *get_ir_node(const ASTNode *ast) {
 static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_label) {
     linkedlist *program = NULL;
     linkedlist *cursor = NULL;
-    printf("current_label = %d\n", current_label);
     switch (ast->kind) {
         case CONDITIONAL:
         {

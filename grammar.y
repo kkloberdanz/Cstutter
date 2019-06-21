@@ -40,6 +40,7 @@
 static int yylex();
 void yyerror(const char *s);
 static ASTNode *tree = NULL;
+static FILE *source_file = NULL;
 
 %}
 
@@ -86,7 +87,7 @@ if_stmt     : IF LPAREN expr RPAREN LBRACE
                   stmt
               RBRACE ELSE LBRACE
                   stmt
-              RBRACE { $$ = make_conditional_node($3, $6, $10) ; }
+              RBRACE                { $$ = make_conditional_node($3, $6, $10) ; }
             ;
 
 expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ; }
@@ -110,13 +111,14 @@ bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
 %%
 
 
-ASTNode *parse(void) {
+ASTNode *parse(FILE *src_file) {
+    source_file = src_file;
     yyparse();
     return tree;
 }
 
 
 static int yylex(void) {
-    int token = get_token();
+    int token = get_token(source_file);
     return token;
 }

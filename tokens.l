@@ -24,8 +24,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "minic.h"
 
+#include "minic.h"
 #include "y.tab.h"
 
 char token_string[MAX_TOKEN_SIZE+1];
@@ -68,13 +68,13 @@ whitespace  [ \t]+
 
 %%
 
-int get_token(void) {
+int get_token(FILE *source_file) {
     static int first_time = true;
     int currentToken;
     if (first_time) {
         first_time = false;
         yylineno++;
-        yyin = stdin;
+        yyin = source_file;
         yyout = stdout;
     }
     currentToken = yylex();

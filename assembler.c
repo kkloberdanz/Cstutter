@@ -26,6 +26,7 @@
 #include "linkedlist.h"
 #include "bst.h"
 #include "instructions.h"
+#include "util.h"
 
 static char *PROGRAM_NAME = NULL;
 
@@ -35,15 +36,9 @@ struct instruction {
     const char *str;
 };
 
-static char *make_str(const char *str) {
-    char *dst = malloc(strlen(str) + 1);
-    strcpy(dst, str);
-    return dst;
-}
-
 void print_usage() {
     fprintf(stderr,
-            "usage: %s INPUT OUTPUT\n",
+            "usage: %s INPUT.s\n",
             PROGRAM_NAME);
 }
 
@@ -242,28 +237,19 @@ int main(int argc, char **argv) {
     int len;
     PROGRAM_NAME = argv[0];
 
-    if (argc != 3) {
+    if (argc != 2) {
         print_usage();
         exit(EXIT_FAILURE);
     }
 
     input_filename = argv[1];
-    output_filename = argv[2];
 
-    len = strlen(output_filename);
-    if (strcmp(".s", output_filename + (len - 2)) == 0) {
-        fprintf(stderr,
-                "second argument is the destination and should not end in .s");
-        print_usage();
-        exit(EXIT_FAILURE);
-    }
+    len = strlen(input_filename) - 1;
+    output_filename = make_str(input_filename);
+    output_filename[len] = 'o';
 
-    if (strcmp(input_filename, output_filename) == 0) {
-        fprintf(stderr, "same filename for bot input and output\n");
-        print_usage();
-        exit(EXIT_FAILURE);
-    }
     emit_assembly(input_filename, output_filename);
+    free(output_filename);
 
     return 0;
 }
