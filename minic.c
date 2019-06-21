@@ -355,8 +355,13 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             program = rec_codegen_stack_machine(ast->condition, current_label + 1);
             cursor = program;
 
-            /* append jump to else if 0 */
-            cursor = ll_append(cursor, ir_new_jump_inst(JZ, else_label));
+            if (ast->right != NULL) {
+                /* append jump to else if 0 */
+                cursor = ll_append(cursor, ir_new_jump_inst(JZ, else_label));
+            } else {
+                /* if no else, then jump to endif if false */
+                cursor = ll_append(cursor, ir_new_jump_inst(JZ, end_if_label));
+            }
 
             /* append if label (not needed but helps for clarity in ASM) */
             cursor = ll_append(cursor, ir_new_label(if_label));
@@ -364,14 +369,17 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             /* concat eval left */
             ll_concat(cursor, rec_codegen_stack_machine(ast->left, current_label + 1));
 
-            /* append jump to end if */
-            cursor = ll_append(cursor, ir_new_jump_inst(J, end_if_label));
+            /* if there is no else */
+            if (ast->right != NULL) {
+                /* append jump to end if */
+                cursor = ll_append(cursor, ir_new_jump_inst(J, end_if_label));
 
-            /* append else label */
-            cursor = ll_append(cursor, ir_new_label(target_else_label));
+                /* append else label */
+                cursor = ll_append(cursor, ir_new_label(target_else_label));
 
-            /* concat eval right */
-            ll_concat(cursor, rec_codegen_stack_machine(ast->right, current_label + 1));
+                /* concat eval right */
+                ll_concat(cursor, rec_codegen_stack_machine(ast->right, current_label + 1));
+            }
 
             /* append end if label */
             cursor = ll_append(cursor, ir_new_label(target_end_if));

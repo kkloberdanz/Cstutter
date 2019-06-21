@@ -88,6 +88,9 @@ if_stmt     : IF LPAREN expr RPAREN LBRACE
               RBRACE ELSE LBRACE
                   stmt
               RBRACE                { $$ = make_conditional_node($3, $6, $10) ; }
+            | IF LPAREN expr RPAREN LBRACE
+                  stmt
+              RBRACE                { $$ = make_conditional_node($3, $6, NULL) ; }
             ;
 
 expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ; }
