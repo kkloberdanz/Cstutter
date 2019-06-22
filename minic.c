@@ -192,6 +192,11 @@ void destroy_ast_node(ASTNode *node) {
             node->right = NULL;
         }
 
+        if (node->sibling) {
+            destroy_ast_node(node->sibling);
+            node->sibling = NULL;
+        }
+
         free(node);
         node = NULL;
     }
@@ -410,9 +415,15 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             break;
         }
 
-        default:
-            fprintf(stderr, "unknown ASTNode kind in emit: %d\n", ast->kind);
-            exit(EXIT_FAILURE);
+        case ASSIGN_EXPR:
+        {
+            /*
+             * lookup var's location in storage
+             * execute ast->right
+             * store to var's location
+             */
+            ;
+        }
     }
     LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);
     return program;

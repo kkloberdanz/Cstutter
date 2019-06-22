@@ -1,7 +1,7 @@
 CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 CLANG=clang -Wassign-enum -Wenum-conversion
-GCC=gcc
+GCC=cc
 SANITIZE=-fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
 
 OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
