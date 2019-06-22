@@ -32,7 +32,11 @@
 #include "instructions.h"
 
 
+#define MAX(A, B) ((A) > (B) ? (A) : (B))
+
+
 char token_string[MAX_TOKEN_SIZE+1];
+int LARGEST_LABEL = 0;
 
 
 /* constructors */
@@ -101,6 +105,7 @@ ASTNode *make_ast_node(const ASTkind kind,
     }
 
     node->kind = kind;
+    node->sibling = NULL;
 
     switch (kind) {
         case LEAF:
@@ -409,12 +414,24 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             fprintf(stderr, "unknown ASTNode kind in emit: %d\n", ast->kind);
             exit(EXIT_FAILURE);
     }
+    LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);
     return program;
 }
 
 
 static linkedlist *codegen_stack_machine(const ASTNode *ast) {
-    return rec_codegen_stack_machine(ast, 0);
+    linkedlist *program = NULL;
+    linkedlist *cursor = NULL;
+    for (;ast != NULL; ast = ast->sibling) {
+        if (program == NULL) {
+            program = rec_codegen_stack_machine(ast, LARGEST_LABEL);
+            cursor = program;
+        } else {
+            cursor = rec_codegen_stack_machine(ast, LARGEST_LABEL);
+            cursor = ll_concat(program, cursor);
+        }
+    }
+    return program;
 }
 
 

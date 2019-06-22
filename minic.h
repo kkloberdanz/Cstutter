@@ -94,6 +94,7 @@ typedef struct ASTNode {
     struct ASTNode *left;
     struct ASTNode *condition;
     struct ASTNode *right;
+    struct ASTNode *sibling;
 } ASTNode;
 
 

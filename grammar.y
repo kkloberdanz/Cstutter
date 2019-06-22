@@ -76,7 +76,23 @@ static FILE *source_file = NULL;
 %right EXPONENT        /* exponentiation */
 
 %%
-prog        : stmt                  { tree = $1 ; }
+prog        : stmts                 { tree = $1 ; }
+            ;
+
+stmts       : stmt                  { $$ = $1 ; }
+            | stmts stmt            {
+                                        YYSTYPE ast = $1;
+                                        if (ast) {
+                                            while (ast->sibling) {
+                                                ast = ast->sibling;
+                                            }
+                                            ast->sibling = $2;
+                                            $$ = $1;
+                                        } else {
+                                            $$ = $2;
+                                        }
+                                    }
+
             ;
 
 stmt        : expr SEMICOLON        { $$ = $1 ; }
