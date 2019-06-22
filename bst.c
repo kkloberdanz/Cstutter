@@ -57,6 +57,7 @@ _tail_insert:
             goto _tail_insert;
         }
     } else {
+        free(key);
         node->value = value;
     }
     return root;
@@ -99,9 +100,9 @@ _tail_find:
 
 void bst_destroy(struct BST* node) {
     if (node != NULL) {
+        free(node->key);
         bst_destroy(node->left);
         bst_destroy(node->right);
-        free(node->key);
         free(node);
     }
 }

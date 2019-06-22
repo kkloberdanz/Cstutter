@@ -80,7 +80,7 @@ parser:
 lint: clean
 	splint *.c
 
-test: build_ll_test build_gs_test build_bst_test
+test: debug build_ll_test build_gs_test build_bst_test
 	rm -f testreport.log
 	echo "Test results" >> testreport.log
 	date >> testreport.log
@@ -98,7 +98,7 @@ test: build_ll_test build_gs_test build_bst_test
 
 build_bst_test:
 	rm -f bst_test
-	$(CC) -o bst_test bst.c tests/bst_test.c
+	$(CC) -o bst_test bst.c tests/bst_test.c util.c
 
 build_ll_test:
 	rm -f ll_test
@@ -110,6 +110,7 @@ build_gs_test:
 
 clean:
 	rm -f *.o
+	rm -f tests/*.o
 	rm -f minic
 	rm -f lex.yy.c
 	rm -f y.tab.c
