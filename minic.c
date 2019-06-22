@@ -154,8 +154,15 @@ ASTNode *make_operator_node(Operator op, ASTNode *left, ASTNode *right) {
 }
 
 
-ASTNode *make_conditional_node(ASTNode *condition, ASTNode *left, ASTNode *right) {
-    ASTNode *node = make_ast_node(CONDITIONAL, NULL, OP_NIL, left, condition, right);
+ASTNode *make_conditional_node(ASTNode *condition,
+                               ASTNode *left,
+                               ASTNode *right) {
+    ASTNode *node = make_ast_node(CONDITIONAL,
+                                  NULL,
+                                  OP_NIL,
+                                  left,
+                                  condition,
+                                  right);
     return node;
 }
 
@@ -315,7 +322,8 @@ static Ir *get_ir_node(const ASTNode *ast) {
 
 
 /* code generation */
-static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_label) {
+static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
+                                             int current_label) {
     linkedlist *program = NULL;
     linkedlist *cursor = NULL;
     switch (ast->kind) {
@@ -362,7 +370,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             sprintf(target_end_if, "_end_if_%d:", current_label);
 
             /* eval condition */
-            program = rec_codegen_stack_machine(ast->condition, current_label + 1);
+            program = rec_codegen_stack_machine(ast->condition,
+                                                current_label + 1);
             cursor = program;
 
             if (ast->right != NULL) {
@@ -377,7 +386,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
             cursor = ll_append(cursor, ir_new_label(if_label));
 
             /* concat eval left */
-            ll_concat(cursor, rec_codegen_stack_machine(ast->left, current_label + 1));
+            ll_concat(cursor, rec_codegen_stack_machine(ast->left,
+                                                        current_label + 1));
 
             /* if there is no else */
             if (ast->right != NULL) {
@@ -388,7 +398,9 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
                 cursor = ll_append(cursor, ir_new_label(target_else_label));
 
                 /* concat eval right */
-                ll_concat(cursor, rec_codegen_stack_machine(ast->right, current_label + 1));
+                ll_concat(cursor,
+                          rec_codegen_stack_machine(ast->right,
+                                                    current_label + 1));
             }
 
             /* append end if label */
@@ -400,7 +412,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast, int current_lab
 
         case OPERATOR:
             program = rec_codegen_stack_machine(ast->right, current_label);
-            ll_concat(program, rec_codegen_stack_machine(ast->left, current_label));
+            ll_concat(program, rec_codegen_stack_machine(ast->left,
+                                                         current_label));
             ll_append(program, get_op_ir(ast->op));
             break;
 

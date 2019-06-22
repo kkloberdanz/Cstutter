@@ -21,6 +21,9 @@ CC=$(GCC) $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
 production: all
 	strip minic stackmachine minias
 
+loc: clean
+	find . -path '*/.*' -prune -o -type f -exec sloccount {} \+
+
 all: $(OBJS)
 	$(CC) -o minic \
              main.o \
