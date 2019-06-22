@@ -41,7 +41,7 @@ const char *inst_names[] = {
     "READC",
     "POP",
     "LOAD",
-    "STORE",
+    "SAVE",
     "J",
     "JZ",
     "JLEZ",
@@ -57,7 +57,7 @@ const int num_opcodes = sizeof(inst_names) / sizeof(char *);
 bool requires_immediate(inst_t inst) {
     switch (inst) {
         case PUSH:
-        case STORE:
+        case SAVE:
         case LOAD:
         case J:
         case JZ:

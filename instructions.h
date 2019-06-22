@@ -45,7 +45,7 @@ typedef enum {
     READC,
     POP,
     LOAD,
-    STORE,
+    SAVE,
     J,
     JZ,
     JLEZ,

@@ -35,7 +35,7 @@ static int *program;
 /* execution stack */
 static int stack[STACK_SIZE];
 
-/* accessed with instructions STORE and LOAD*/
+/* accessed with instructions SAVE and LOAD */
 static int storage[STORAGE_SIZE];
 
 /* Save return address here */
@@ -50,7 +50,6 @@ static int cp = 0; /* Call Pointer
                Return address returns address after jump instructions */
 
 /* Stack Register Save Register used for saving data to the stack */
-/*static int sr = PROG_SIZE;*/
 
 #ifdef DEBUG
 static void print_call_stack() {
@@ -164,23 +163,9 @@ static int execute(int inst) {
             stack[++sp] = storage[program[++pc]];
             break;
 
-            /*
-        case LOADRA:
-             ra = stack[sr];
-             sr++;
-             break;
-             */
-
-        case STORE:
+        case SAVE:
             storage[program[++pc]] = stack[sp--];
             break;
-
-            /*
-        case STORERA:
-            stack[sr] = ra;
-            sr--;
-            break;
-            */
 
         case J:
             pc = program[pc+1];

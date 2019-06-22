@@ -97,6 +97,10 @@ stmts       : stmt                  { $$ = $1 ; }
 
 stmt        : expr SEMICOLON        { $$ = $1 ; }
             | if_stmt               { $$ = $1 ; }
+            | assign_expr SEMICOLON { $$ = $1 ; }
+            ;
+
+assign_expr : ID ASSIGN expr        { $$ = $1 ; }
             ;
 
 if_stmt     : IF LPAREN expr RPAREN LBRACE

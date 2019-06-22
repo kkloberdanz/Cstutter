@@ -54,7 +54,8 @@ typedef enum {
 typedef enum {
     CONDITIONAL,
     OPERATOR,
-    LEAF
+    LEAF,
+    ASSIGN_EXPR
 } ASTkind;
 
 
@@ -78,8 +79,8 @@ typedef enum {
 typedef struct MinicObject {
     MinicType type;
     union {
-        char * number_value;
-        char * real_value;
+        char *number_value;
+        char *real_value;
         bool bool_value;
         char *string_value;
         char *symbol;
