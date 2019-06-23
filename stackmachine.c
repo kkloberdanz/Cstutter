@@ -125,6 +125,17 @@ static void load_code_from_file(int *code, char *filename) {
     fclose(fp);
 }
 
+#ifdef DEBUG
+static void print_array(int* arr, int size) {
+    int i;
+    printf("[");
+    for (i = 0; i < size - 1; ++i) {
+        printf("%d, ", arr[i]);
+    }
+    printf("%d]\n", arr[i]);
+}
+#endif
+
 static int execute(int inst) {
 
     if (pc > PROG_SIZE) {
@@ -159,13 +170,21 @@ static int execute(int inst) {
             stack[sp] = program[++pc];
             break;
 
-        case LOAD:
-            stack[++sp] = storage[program[++pc]];
+        case SAVE:
+        {
+            int address = stack[sp--];
+            int value = stack[sp--];
+            storage[address] = value;
+        }
             break;
 
-        case SAVE:
-            storage[program[++pc]] = stack[sp--];
+        case LOAD:
+        {
+            int address = stack[sp];
+            printf("address = %d\n", address);
+            stack[sp] = storage[address];
             break;
+        }
 
         case J:
             pc = program[pc+1];
@@ -377,17 +396,6 @@ static void loop() {
 #endif
     }
 }
-
-#ifdef DEBUG
-static void print_array(int* arr, int size) {
-    int i;
-    printf("[");
-    for (i = 0; i < size - 1; ++i) {
-        printf("%d, ", arr[i]);
-    }
-    printf("%d]\n", arr[i]);
-}
-#endif
 
 int main(int argc, char** argv) {
 

@@ -498,7 +498,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
             location = location_node->value;
             program = rec_codegen_stack_machine(ast->right,
                                                 current_label);
-            ll_append(program, ir_new_save(location));
+            ll_append(program, ir_new_push_immediate(location));
+            ll_append(program, ir_new_save());
             break;
         }
 
@@ -512,7 +513,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
                 exit(EXIT_FAILURE);
             }
             location = location_node->value;
-            program = ll_new(ir_new_load(location));
+            program = ll_new(ir_new_push_immediate(location));
+            ll_append(program, ir_new_load());
         }
     }
     LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);

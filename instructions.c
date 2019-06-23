@@ -57,8 +57,6 @@ const int num_opcodes = sizeof(inst_names) / sizeof(char *);
 bool requires_immediate(inst_t inst) {
     switch (inst) {
         case PUSH:
-        case SAVE:
-        case LOAD:
         case J:
         case JZ:
         case JNZ:
