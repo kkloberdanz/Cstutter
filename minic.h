@@ -56,7 +56,8 @@ typedef enum {
     OPERATOR,
     LEAF,
     ASSIGN_EXPR,
-    DECLARE_STMT
+    DECLARE_STMT,
+    LOAD_STMT
 } ASTkind;
 
 
@@ -126,6 +127,7 @@ ASTNode *make_conditional_node(ASTNode *left,
 
 ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right);
 ASTNode *make_declare_node(ASTNode *leaf_obj);
+ASTNode *make_load_node(ASTNode *leaf_obj);
 
 /* destructors */
 void destroy_obj(MinicObject *);

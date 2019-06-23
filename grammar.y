@@ -125,7 +125,7 @@ expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ;
             | bool_expr             { $$ = $1 ; }
             | LPAREN expr RPAREN    { $$ = $2 ; }
             | NUMBER                { $$ = make_leaf_node(make_number_obj(token_string)) ; }
-            | id                    { $$ = $1 ; }
+            | id                    { $$ = make_load_node($1) ; }
             ;
 
 bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }

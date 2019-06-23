@@ -152,10 +152,13 @@ ASTNode *make_ast_node(const ASTkind kind,
             node->right = right_node;
             break;
 
-        default:
-            fprintf(stderr, "error: invalid ASTkind %d\n", kind);
-            destroy_ast_node(node);
-            node = NULL;
+        case LOAD_STMT:
+            node->obj = obj;
+            node->op = op;
+            node->left = left_node;
+            node->condition = condition;
+            node->right = right_node;
+            break;
     }
 
     return node;
@@ -197,6 +200,13 @@ ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right) {
 ASTNode *make_declare_node(ASTNode *leaf_obj) {
     MinicObject *obj = leaf_obj->obj;
     ASTNode *node = make_ast_node(DECLARE_STMT, obj, OP_NIL, NULL, NULL, NULL);
+    return node;
+}
+
+
+ASTNode *make_load_node(ASTNode *leaf_obj) {
+    MinicObject *obj = leaf_obj->obj;
+    ASTNode *node = make_ast_node(LOAD_STMT, obj, OP_NIL, NULL, NULL, NULL);
     return node;
 }
 
@@ -476,7 +486,7 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
             /*
              * lookup var's location in storage
              * execute ast->right
-             * store to var's location
+             * save to var's location
              */
             char *id = ast->obj->value.symbol;
             int location = -1;
@@ -487,9 +497,22 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
             }
             location = location_node->value;
             program = rec_codegen_stack_machine(ast->right,
-                                                        current_label);
-            ll_append(program, ir_new_store(location));
+                                                current_label);
+            ll_append(program, ir_new_save(location));
             break;
+        }
+
+        case LOAD_STMT:
+        {
+            char *id = ast->obj->value.symbol;
+            int location = -1;
+            struct BST *location_node = bst_find(id_map, id);
+            if (location_node == NULL) {
+                fprintf(stderr, "identifier: '%s' has not been declared\n", id);
+                exit(EXIT_FAILURE);
+            }
+            location = location_node->value;
+            program = ll_new(ir_new_load(location));
         }
     }
     LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);
