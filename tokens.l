@@ -51,6 +51,7 @@ whitespace  [ \t]+
 "then"        { return THEN; }
 "else"        { return ELSE; }
 "print"       { return PRINT; }
+"int"         { return INT; }
 "("           { return LPAREN; }
 ")"           { return RPAREN; }
 "+"           { return PLUS; }

@@ -33,6 +33,7 @@ all: $(OBJS)
 			 ir.o \
 			 lex.yy.o \
 			 util.o \
+			 bst.o \
 			 y.tab.o -lfl -ly
 
 main:

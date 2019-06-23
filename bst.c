@@ -77,6 +77,9 @@ void bst_print(struct BST* node) {
 
 struct BST *bst_find(struct BST* node, char *key) {
     int comparison;
+    if (node == NULL) {
+        return NULL;
+    }
 _tail_find:
     comparison = strcmp(node->key, key);
     if (comparison < 0) {

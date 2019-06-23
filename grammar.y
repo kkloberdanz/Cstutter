@@ -50,6 +50,7 @@ static FILE *source_file = NULL;
 %token THEN
 %token ELSE
 %token PRINT
+%token INT
 %token ID
 %token NUMBER
 %token ASSIGN
@@ -98,9 +99,13 @@ stmts       : stmt                  { $$ = $1 ; }
 stmt        : expr SEMICOLON        { $$ = $1 ; }
             | if_stmt               { $$ = $1 ; }
             | assign_expr SEMICOLON { $$ = $1 ; }
+            | declare SEMICOLON     { $$ = $1 ; }
             ;
 
-assign_expr : ID ASSIGN expr        { $$ = $1 ; }
+declare     : INT id                { $$ = make_declare_node($2) ; }
+            ;
+
+assign_expr : id ASSIGN expr        { $$ = make_assign_node($1, $3); }
             ;
 
 if_stmt     : IF LPAREN expr RPAREN LBRACE
@@ -120,7 +125,7 @@ expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ;
             | bool_expr             { $$ = $1 ; }
             | LPAREN expr RPAREN    { $$ = $2 ; }
             | NUMBER                { $$ = make_leaf_node(make_number_obj(token_string)) ; }
-            | ID                    { $$ = make_leaf_node(make_id_obj(make_string(token_string))) ; }
+            | id                    { $$ = $1 ; }
             ;
 
 bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
@@ -129,6 +134,9 @@ bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
             | expr GT expr          { $$ = make_operator_node(OP_GT, $1, $3) ; }
             | expr GE expr          { $$ = make_operator_node(OP_GE, $1, $3) ; }
             | expr NE expr          { $$ = make_operator_node(OP_NE, $1, $3) ; }
+            ;
+
+id          : ID                    { $$ = make_leaf_node(make_id_obj(make_string(token_string))) ; }
             ;
 
 %%

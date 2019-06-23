@@ -30,6 +30,7 @@
 #include "linkedlist.h"
 #include "ir.h"
 #include "instructions.h"
+#include "bst.h"
 
 
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
@@ -37,7 +38,8 @@
 
 char token_string[MAX_TOKEN_SIZE+1];
 int LARGEST_LABEL = 0;
-
+int VAR_INDEX = 0;
+struct BST *id_map = NULL;
 
 /* constructors */
 MinicObject *make_number_obj(char *n) {
@@ -91,6 +93,7 @@ char *make_string(char *str) {
 }
 
 
+/* TODO: track line number and column number */
 ASTNode *make_ast_node(const ASTkind kind,
                        MinicObject *obj,
                        const Operator op,
@@ -107,6 +110,7 @@ ASTNode *make_ast_node(const ASTkind kind,
     node->kind = kind;
     node->sibling = NULL;
 
+    /* TODO git rid of switch and just make node with the given params */
     switch (kind) {
         case LEAF:
             node->obj = obj;
@@ -129,6 +133,22 @@ ASTNode *make_ast_node(const ASTkind kind,
             node->op = op;
             node->left = left_node;
             node->condition = NULL;
+            node->right = right_node;
+            break;
+
+        case ASSIGN_EXPR:
+            node->obj = obj;
+            node->op = op;
+            node->left = left_node;
+            node->condition = condition;
+            node->right = right_node;
+            break;
+
+        case DECLARE_STMT:
+            node->obj = obj;
+            node->op = op;
+            node->left = left_node;
+            node->condition = condition;
             node->right = right_node;
             break;
 
@@ -163,6 +183,20 @@ ASTNode *make_conditional_node(ASTNode *condition,
                                   left,
                                   condition,
                                   right);
+    return node;
+}
+
+
+ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right) {
+    MinicObject *obj = leaf_obj->obj;
+    ASTNode *node = make_ast_node(ASSIGN_EXPR, obj, OP_NIL, NULL, NULL, right);
+    return node;
+}
+
+
+ASTNode *make_declare_node(ASTNode *leaf_obj) {
+    MinicObject *obj = leaf_obj->obj;
+    ASTNode *node = make_ast_node(DECLARE_STMT, obj, OP_NIL, NULL, NULL, NULL);
     return node;
 }
 
@@ -411,7 +445,8 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
         }
 
         case OPERATOR:
-            program = rec_codegen_stack_machine(ast->right, current_label);
+            program = rec_codegen_stack_machine(ast->right,
+                                                current_label);
             ll_concat(program, rec_codegen_stack_machine(ast->left,
                                                          current_label));
             ll_append(program, get_op_ir(ast->op));
@@ -428,6 +463,14 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
             break;
         }
 
+        case DECLARE_STMT:
+        {
+            char *id = ast->obj->value.symbol;
+            int location = VAR_INDEX++;
+            id_map = bst_insert(id_map, id, location);
+            break;
+        }
+
         case ASSIGN_EXPR:
         {
             /*
@@ -435,7 +478,18 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
              * execute ast->right
              * store to var's location
              */
-            ;
+            char *id = ast->obj->value.symbol;
+            int location = -1;
+            struct BST *location_node = bst_find(id_map, id);
+            if (location_node == NULL) {
+                fprintf(stderr, "identifier: '%s' has not been declared\n", id);
+                exit(EXIT_FAILURE);
+            }
+            location = location_node->value;
+            program = rec_codegen_stack_machine(ast->right,
+                                                        current_label);
+            ll_append(program, ir_new_store(location));
+            break;
         }
     }
     LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);

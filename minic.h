@@ -55,7 +55,8 @@ typedef enum {
     CONDITIONAL,
     OPERATOR,
     LEAF,
-    ASSIGN_EXPR
+    ASSIGN_EXPR,
+    DECLARE_STMT
 } ASTkind;
 
 
@@ -103,6 +104,7 @@ typedef struct ASTNode {
 MinicObject *make_number_obj(char *number);
 MinicObject *make_string_obj(char *str);
 MinicObject *make_id_obj(char *str);
+
 char *make_string(char *str);
 
 ASTNode *make_ast_node(const ASTkind, /* base constructor */
@@ -121,6 +123,9 @@ ASTNode *make_operator_node(Operator,  /* holds operator and child items */
 ASTNode *make_conditional_node(ASTNode *left,
                                ASTNode *condition,
                                ASTNode *right);
+
+ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right);
+ASTNode *make_declare_node(ASTNode *leaf_obj);
 
 /* destructors */
 void destroy_obj(MinicObject *);

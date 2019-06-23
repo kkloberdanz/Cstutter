@@ -58,6 +58,17 @@ struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
 }
 
 
+struct Ir *ir_new_store(int location) {
+    struct Ir *ir = minic_malloc(sizeof(struct Ir));
+    char *repr = calloc(255, sizeof(char));
+    sprintf(repr, "SAVE %d", location);
+    ir->kind = IR_SAVE;
+    ir->repr = repr;
+    ir->value.number = NULL;
+    return ir;
+}
+
+
 void ir_free_list(linkedlist *ll) {
     linkedlist *free_me = NULL;
     while (ll) {
@@ -66,6 +77,7 @@ void ir_free_list(linkedlist *ll) {
             case IR_JMP:
             case IR_END:
             case IR_LABEL:
+            case IR_SAVE:
                 free(ir->repr);
                 ir->repr = NULL;
                 break;
