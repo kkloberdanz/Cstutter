@@ -1,3 +1,4 @@
 int x = 11;
 int y = 14;
-x + y + 3;
+int z = x + y + 3;
+z + 2;
