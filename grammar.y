@@ -100,12 +100,20 @@ stmt        : expr SEMICOLON        { $$ = $1 ; }
             | if_stmt               { $$ = $1 ; }
             | assign_expr SEMICOLON { $$ = $1 ; }
             | declare SEMICOLON     { $$ = $1 ; }
+            | decl_assign SEMICOLON { $$ = $1 ; }
             ;
 
 declare     : INT id                { $$ = make_declare_node($2) ; }
             ;
 
 assign_expr : id ASSIGN expr        { $$ = make_assign_node($1, $3); }
+            ;
+
+decl_assign : INT id ASSIGN expr    {
+                                        YYSTYPE decl = make_declare_node($2);
+                                        decl->sibling = make_assign_node($2, $4);
+                                        $$ = decl;
+                                    }
             ;
 
 if_stmt     : IF LPAREN expr RPAREN LBRACE

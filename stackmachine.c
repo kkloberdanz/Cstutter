@@ -181,7 +181,6 @@ static int execute(int inst) {
         case LOAD:
         {
             int address = stack[sp];
-            printf("address = %d\n", address);
             stack[sp] = storage[address];
             break;
         }
