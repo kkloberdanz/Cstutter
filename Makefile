@@ -1,7 +1,6 @@
 CFLAGS=-std=iso9899:1990
 WARN_FLAGS=-Wall -Wextra -Wpedantic -Werror
 CLANG=clang -Wassign-enum -Wenum-conversion
-GCC=cc
 SANITIZE=-fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined
 
 OBJS=lexer parser minic main linkedlist ir assembler growstring linkedlist \
@@ -16,7 +15,7 @@ debug: all
 valgrind: OPTIM_FLAGS=-Og -ggdb -DDEBUG
 valgrind: all
 
-CC=$(GCC) $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
+CC=cc $(OPTIM_FLAGS) $(CFLAGS) $(WARN_FLAGS)
 
 production: all
 	strip minic stackmachine minias
@@ -123,3 +122,4 @@ clean:
 	rm -f *_test
 	rm -f stackmachine
 	rm -f minias
+	rm -f core

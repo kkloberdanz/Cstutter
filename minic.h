@@ -57,7 +57,8 @@ typedef enum {
     LEAF,
     ASSIGN_EXPR,
     DECLARE_STMT,
-    LOAD_STMT
+    LOAD_STMT,
+    FUNC_DEF
 } ASTkind;
 
 
@@ -108,9 +109,9 @@ MinicObject *make_id_obj(char *str);
 
 char *make_string(char *str);
 
-ASTNode *make_ast_node(const ASTkind, /* base constructor */
+ASTNode *make_ast_node(ASTkind, /* base constructor */
                        MinicObject *,
-                       const Operator,
+                       Operator,
                        ASTNode *,
                        ASTNode *,
                        ASTNode *);
@@ -128,6 +129,7 @@ ASTNode *make_conditional_node(ASTNode *left,
 ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right);
 ASTNode *make_declare_node(ASTNode *leaf_obj);
 ASTNode *make_load_node(ASTNode *leaf_obj);
+ASTNode *make_function_node(ASTNode *leaf_obj, ASTNode *right);
 
 /* destructors */
 void destroy_obj(MinicObject *);
@@ -143,9 +145,9 @@ ASTNode *parse(FILE *source_file);
 
 
 /* code generation */
-char *get_op_str(const Operator op);
-char *get_op_val(char *str, const MinicObject *obj);
-int emit(FILE *, const ASTNode *);
+char *get_op_str(Operator op);
+char *get_op_val(char *str, MinicObject *obj);
+int emit(FILE *, ASTNode *);
 
 
 #endif /* STUTTER_H */

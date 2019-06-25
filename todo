@@ -1,0 +1,6 @@
+1) function definitions
+2) function calls
+3) fix memory errors
+4) fix memory leaks
+5) allow more types than int
+6) allow user definable types

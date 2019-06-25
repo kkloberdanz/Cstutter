@@ -15,7 +15,9 @@ typedef enum ir_kind {
     IR_LABEL,
     IR_SAVE,
     IR_LOAD,
-    IR_PUSH
+    IR_PUSH,
+    IR_RET,
+    IR_CALL
 } ir_kind;
 
 
@@ -29,6 +31,7 @@ typedef struct Ir {
 } Ir;
 
 
+struct Ir *ir_call_main();
 void ir_print_program(FILE *output, const linkedlist *program);
 linkedlist *ir_halt_program(linkedlist* program);
 struct Ir *ir_new_jump_inst(inst_t instruction, const char *label);
@@ -37,5 +40,6 @@ void ir_free_list(linkedlist *ll);
 struct Ir *ir_new_save();
 struct Ir *ir_new_load();
 struct Ir *ir_new_push_immediate(int immediate);
+struct Ir *ir_new_ret();
 
 #endif /* IR_H */

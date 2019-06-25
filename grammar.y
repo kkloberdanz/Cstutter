@@ -101,6 +101,13 @@ stmt        : expr SEMICOLON        { $$ = $1 ; }
             | assign_expr SEMICOLON { $$ = $1 ; }
             | declare SEMICOLON     { $$ = $1 ; }
             | decl_assign SEMICOLON { $$ = $1 ; }
+            | decl_func             { $$ = $1 ; }
+            ;
+
+decl_func   : INT id LPAREN RPAREN
+              LBRACE
+              stmts
+              RBRACE                { $$ = make_function_node($2, $6); }
             ;
 
 declare     : INT id                { $$ = make_declare_node($2) ; }
@@ -111,7 +118,7 @@ assign_expr : id ASSIGN expr        { $$ = make_assign_node($1, $3); }
 
 decl_assign : INT id ASSIGN expr    {
                                         YYSTYPE decl = make_declare_node($2);
-                                        decl->sibling = make_assign_node($2, $4);
+                                        decl->right = make_assign_node($2, $4);
                                         $$ = decl;
                                     }
             ;
@@ -144,7 +151,7 @@ bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
             | expr NE expr          { $$ = make_operator_node(OP_NE, $1, $3) ; }
             ;
 
-id          : ID                    { $$ = make_leaf_node(make_id_obj(make_string(token_string))) ; }
+id          : ID                    { $$ = make_leaf_node(make_id_obj(token_string)) ; }
             ;
 
 %%

@@ -22,10 +22,19 @@ void ir_print_program(FILE *output, const linkedlist *program) {
 }
 
 
+struct Ir *ir_call_main() {
+    Ir *ir = (Ir *)minic_malloc(sizeof(Ir));
+    ir->kind = IR_CALL;
+    ir->repr = make_str("\tCALL main");
+    ir->value.op = CALL;
+    return ir;
+}
+
+
 linkedlist *ir_halt_program(linkedlist* program) {
     Ir *ir = (Ir *)minic_malloc(sizeof(Ir));
     ir->kind = IR_END;
-    ir->repr = make_str("HALT");
+    ir->repr = make_str("\tHALT");
     ir->value.op = HALT;
     ll_append(program, ir);
     return program;
@@ -61,7 +70,7 @@ struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
 struct Ir *ir_new_save() {
     struct Ir *ir = minic_malloc(sizeof(struct Ir));
     ir->kind = IR_SAVE;
-    ir->repr = make_str("SAVE");
+    ir->repr = make_str("\tSAVE");
     ir->value.number = NULL;
     return ir;
 }
@@ -70,7 +79,7 @@ struct Ir *ir_new_save() {
 struct Ir *ir_new_load() {
     struct Ir *ir = minic_malloc(sizeof(struct Ir));
     ir->kind = IR_LOAD;
-    ir->repr = make_str("LOAD");
+    ir->repr = make_str("\tLOAD");
     ir->value.number = NULL;
     return ir;
 }
@@ -79,9 +88,18 @@ struct Ir *ir_new_load() {
 struct Ir *ir_new_push_immediate(int immediate) {
     struct Ir *ir = minic_malloc(sizeof(struct Ir));
     char *repr = calloc(255, sizeof(char));
-    sprintf(repr, "PUSH %d", immediate);
+    sprintf(repr, "\tPUSH %d", immediate);
     ir->kind = IR_PUSH;
     ir->repr = repr;
+    ir->value.number = NULL;
+    return ir;
+}
+
+
+struct Ir *ir_new_ret() {
+    struct Ir *ir = minic_malloc(sizeof(struct Ir));
+    ir->kind = IR_RET;
+    ir->repr = make_str("\tRET");
     ir->value.number = NULL;
     return ir;
 }
@@ -98,6 +116,7 @@ void ir_free_list(linkedlist *ll) {
             case IR_SAVE:
             case IR_LOAD:
             case IR_PUSH:
+            case IR_RET:
                 free(ir->repr);
                 ir->repr = NULL;
                 break;

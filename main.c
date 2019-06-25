@@ -25,6 +25,7 @@
 
 
 #include "minic.h"
+#include "util.h"
 
 
 bool is_c_src_file(char *filename, int len) {
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        output_filename = make_string(source_filename);
+        output_filename = make_str(source_filename);
         output_filename[len] = 's';
         output = fopen(output_filename, "w");
         free(output_filename);
@@ -78,7 +79,7 @@ int main(int argc, char **argv) {
             fprintf(stderr, "%s\n", "failed to close output file");
             exit(EXIT_FAILURE);
         }
-        destroy_ast_node(tree);
+        /*destroy_ast_node(tree);*/
         return exit_code;
     }
 }

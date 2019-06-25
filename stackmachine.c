@@ -42,7 +42,7 @@ static int storage[STORAGE_SIZE];
 static int call_stack[CALL_STACK_SIZE];
 
 /* Registers */
-static int pc = 0; /* Program Counter */
+static int pc = 1; /* Program Counter */
 
 static int sp = 0; /* Stack Pointer */
 
@@ -104,7 +104,7 @@ static void load_code_from_file(int *code, char *filename) {
     char buff[255];
     int c;
     int count = 0;
-    int i = 0;
+    int i = 1;
 
     fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -256,7 +256,7 @@ static int execute(int inst) {
             pc = call_stack[cp];
 #ifdef DEBUG
             print_call_stack();
-            printf("PC = %d, RETURNING TO: %d\n", pc, program[call_stack[cp]]);
+            printf("PC = %d, RETURNING TO: %d\n", pc, program[pc]);
 #endif
             return 1;
             break;
@@ -389,7 +389,7 @@ static int execute(int inst) {
 }
 
 static void loop() {
-    for (pc = 0; execute(program[pc]); ) {
+    for (pc = 1; execute(program[pc]); ) {
 #ifdef DEBUG
         print_stack();
 #endif
@@ -404,9 +404,11 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    call_stack[cp++] = 0;
     printf("*** LOADING ***\n");
     num_lines = get_num_lines(argv[1]);
-    program = malloc(num_lines * sizeof(int));
+    program = malloc(num_lines * sizeof(int) + 1);
+    program[0] = HALT;
 
     load_code_from_file(program, argv[1]);
 #ifdef DEBUG

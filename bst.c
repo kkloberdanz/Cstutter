@@ -57,7 +57,7 @@ _tail_insert:
             goto _tail_insert;
         }
     } else {
-        free(key);
+        /*free(key);*/
         node->value = value;
     }
     return root;

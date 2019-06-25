@@ -31,6 +31,7 @@
 #include "ir.h"
 #include "instructions.h"
 #include "bst.h"
+#include "util.h"
 
 
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
@@ -65,7 +66,7 @@ MinicObject *make_string_obj(char *str) {
         return NULL;
     }
     obj->type = STRING_TYPE;
-    obj->value.string_value = str;
+    obj->value.string_value = make_str(str);
     return obj;
 }
 
@@ -77,90 +78,28 @@ MinicObject *make_id_obj(char *symb) {
         return NULL;
     }
     obj->type = VOID_TYPE;
-    obj->value.symbol = symb;
+    obj->value.symbol = make_str(symb);
     return obj;
 }
 
 
-char *make_string(char *str) {
-    char *s = (char *)malloc(strlen(str) + 1);
-    if (s == NULL) {
-        fprintf(stderr, "%s\n", "out of memory");
-        return NULL;
-    }
-    strcpy(s, str);
-    return s;
-}
-
-
 /* TODO: track line number and column number */
-ASTNode *make_ast_node(const ASTkind kind,
+ASTNode *make_ast_node(ASTkind kind,
                        MinicObject *obj,
-                       const Operator op,
-                       ASTNode *left_node,
+                       Operator op,
+                       ASTNode *left,
                        ASTNode *condition,
-                       ASTNode *right_node) {
+                       ASTNode *right) {
 
-    ASTNode *node;
-    if ((node = (ASTNode *)malloc(sizeof(ASTNode))) == NULL) {
-        fprintf(stderr, "failed to allocate memory");
-        return NULL;
-    }
+    ASTNode *node = minic_malloc(sizeof(ASTNode));
 
     node->kind = kind;
     node->sibling = NULL;
-
-    /* TODO git rid of switch and just make node with the given params */
-    switch (kind) {
-        case LEAF:
-            node->obj = obj;
-            node->op = op;
-            node->left = NULL;
-            node->condition = NULL;
-            node->right = NULL;
-            break;
-
-        case CONDITIONAL:
-            node->obj = NULL;
-            node->op = OP_NIL;
-            node->left = left_node; /* the true path */
-            node->condition = condition; /* the expr to evaluate */
-            node->right = right_node; /* the false path */
-            break;
-
-        case OPERATOR:
-            node->obj = NULL;
-            node->op = op;
-            node->left = left_node;
-            node->condition = NULL;
-            node->right = right_node;
-            break;
-
-        case ASSIGN_EXPR:
-            node->obj = obj;
-            node->op = op;
-            node->left = left_node;
-            node->condition = condition;
-            node->right = right_node;
-            break;
-
-        case DECLARE_STMT:
-            node->obj = obj;
-            node->op = op;
-            node->left = left_node;
-            node->condition = condition;
-            node->right = right_node;
-            break;
-
-        case LOAD_STMT:
-            node->obj = obj;
-            node->op = op;
-            node->left = left_node;
-            node->condition = condition;
-            node->right = right_node;
-            break;
-    }
-
+    node->obj = obj;
+    node->op = op;
+    node->left = left;
+    node->condition = condition;
+    node->right = right;
     return node;
 }
 
@@ -211,6 +150,13 @@ ASTNode *make_load_node(ASTNode *leaf_obj) {
 }
 
 
+ASTNode *make_function_node(ASTNode *leaf_obj, ASTNode *right) {
+    MinicObject *obj = leaf_obj->obj;
+    ASTNode *node = make_ast_node(FUNC_DEF, obj, OP_NIL, NULL, NULL, right);
+    return node;
+}
+
+
 /* destructors */
 void destroy_obj(MinicObject *obj) {
     free(obj->value.number_value);
@@ -254,7 +200,7 @@ void destroy_ast_node(ASTNode *node) {
 }
 
 
-static Ir *get_op_ir(const Operator op) {
+static Ir *get_op_ir(Operator op) {
     Ir *ir = (Ir *)malloc(sizeof(Ir));
     if (ir == NULL) {
         fprintf(stderr, "%s\n", "failed to allocate Ir object");
@@ -263,62 +209,62 @@ static Ir *get_op_ir(const Operator op) {
     ir->kind = IR_OP;
     switch (op) {
         case OP_NIL:
-            ir->repr = "NOP";
+            ir->repr = "\tNOP";
             ir->value.op = NOP;
             break;
 
         case OP_PLUS:
-            ir->repr = "ADD";
+            ir->repr = "\tADD";
             ir->value.op = ADD;
             break;
 
         case OP_MINUS:
-            ir->repr = "SUB";
+            ir->repr = "\tSUB";
             ir->value.op = SUB;
             break;
 
         case OP_TIMES:
-            ir->repr = "MUL";
+            ir->repr = "\tMUL";
             ir->value.op = MUL;
             break;
 
         case OP_DIVIDE:
-            ir->repr = "DIV";
+            ir->repr = "\tDIV";
             ir->value.op = DIV;
             break;
 
         case OP_GE:
-            ir->repr = "GE";
+            ir->repr = "\tGE";
             ir->value.op = GE;
             break;
 
         case OP_GT:
-            ir->repr = "GT";
+            ir->repr = "\tGT";
             ir->value.op = GT;
             break;
 
         case OP_EQ:
-            ir->repr = "EQ";
+            ir->repr = "\tEQ";
             ir->value.op = EQ;
             break;
 
         case OP_NE:
-            ir->repr = "NE";
+            ir->repr = "\tNE";
             ir->value.op = NE;
             break;
 
         case OP_LT:
-            ir->repr = "LT";
+            ir->repr = "\tLT";
             ir->value.op = LT;
             break;
 
         case OP_LE:
-            ir->repr = "LE";
+            ir->repr = "\tLE";
             ir->value.op = LE;
             break;
 
         case OP_NOT:
-            ir->repr = "NOT";
+            ir->repr = "\tNOT";
             ir->value.op = NOT;
             break;
     }
@@ -326,7 +272,7 @@ static Ir *get_op_ir(const Operator op) {
 }
 
 
-char *get_op_val(char *str, const MinicObject *obj) {
+char *get_op_val(char *str, MinicObject *obj) {
     switch (obj->type) {
         case NUMBER_TYPE:
             sprintf(str, "%s", obj->value.number_value);
@@ -340,7 +286,7 @@ char *get_op_val(char *str, const MinicObject *obj) {
 }
 
 
-static Ir *get_ir_node(const ASTNode *ast) {
+static Ir *get_ir_node(ASTNode *ast) {
     Ir *ir_node = NULL;
     switch (ast->kind) {
         case LEAF:
@@ -366,10 +312,13 @@ static Ir *get_ir_node(const ASTNode *ast) {
 
 
 /* code generation */
-static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
+static linkedlist *rec_codegen_stack_machine(ASTNode *ast,
                                              int current_label) {
     linkedlist *program = NULL;
     linkedlist *cursor = NULL;
+    if (ast == NULL) {
+        return NULL;
+    }
     switch (ast->kind) {
         case CONDITIONAL:
         {
@@ -465,7 +414,7 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
         case LEAF:
         {
             Ir *ir = (Ir *)malloc(sizeof(Ir));
-            ir->repr = "PUSH";
+            ir->repr = "\tPUSH";
             ir->kind = IR_OP;
             ir->value.op = PUSH;
             program = ll_new(ir);
@@ -477,7 +426,10 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
         {
             char *id = ast->obj->value.symbol;
             int location = VAR_INDEX++;
+
             id_map = bst_insert(id_map, id, location);
+            printf("declare id: %s:%d\n", id, location);
+            program = rec_codegen_stack_machine(ast->right, current_label);
             break;
         }
 
@@ -515,6 +467,33 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
             location = location_node->value;
             program = ll_new(ir_new_push_immediate(location));
             ll_append(program, ir_new_load());
+            break;
+        }
+
+        case FUNC_DEF:
+        {
+            /*
+             * put function label
+             * put funciton body
+             * put ret
+             */
+            char *id = ast->obj->value.symbol;
+            int location = VAR_INDEX++;
+            ASTNode *func_body = ast->right;
+            char func_label[255];
+            linkedlist *func_code = NULL;
+            ASTNode *cursor;
+
+            sprintf(func_label, "%s:", id);
+            id_map = bst_insert(id_map, id, location);
+            program = ll_new(ir_new_label(func_label));
+
+            for (cursor = func_body; cursor != NULL; cursor = cursor->sibling) {
+                func_code = rec_codegen_stack_machine(cursor, current_label);
+                ll_concat(program, func_code);
+            }
+            ll_append(program, ir_new_ret());
+            break;
         }
     }
     LARGEST_LABEL = MAX(LARGEST_LABEL, current_label);
@@ -522,7 +501,7 @@ static linkedlist *rec_codegen_stack_machine(const ASTNode *ast,
 }
 
 
-static linkedlist *codegen_stack_machine(const ASTNode *ast) {
+static linkedlist *codegen_stack_machine(ASTNode *ast) {
     linkedlist *program = NULL;
     linkedlist *cursor = NULL;
     for (;ast != NULL; ast = ast->sibling) {
@@ -538,10 +517,10 @@ static linkedlist *codegen_stack_machine(const ASTNode *ast) {
 }
 
 
-int emit(FILE *output, const ASTNode *ast) {
+int emit(FILE *output, ASTNode *ast) {
     linkedlist *program = codegen_stack_machine(ast);
     program = ir_halt_program(program);
     ir_print_program(output, program);
-    ir_free_list(program);
+    /*ir_free_list(program);*/
     return 0;
 }
