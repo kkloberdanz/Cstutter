@@ -15,7 +15,8 @@ void *minic_malloc(const size_t size) {
 }
 
 char *make_str(const char *str) {
-    char *dst = minic_malloc(strlen(str) + 1);
-    strcpy(dst, str);
+    const size_t str_len = strlen(str);
+    char *dst = minic_malloc(str_len + 1);
+    memcpy(dst, str, str_len);
     return dst;
 }

@@ -73,7 +73,7 @@ growstring *gs_write(growstring *dest, const char *data) {
     dest->data = new_data;
     dest->size = new_data_size - 1;
     dest->capacity = new_data_size - 1;
-    strcpy(dest->data, data);
+    memcpy(dest->data, data, new_data_size - 1);
     return dest;
 }
 
