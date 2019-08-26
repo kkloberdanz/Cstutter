@@ -59,7 +59,7 @@ struct Ir *ir_new_jump_inst(inst_t instruction, const char *label) {
     /* allocate enough memory for \0 and a space between the two strings */
     tmp_str = minic_malloc(strlen(inst_name) + strlen(label) + 2);
 
-    sprintf(tmp_str, "%s %s", inst_name, label);
+    sprintf(tmp_str, "\t%s %s", inst_name, label);
     ir->kind = IR_JMP;
     ir->repr = tmp_str;
     ir->value.number = NULL;

@@ -58,7 +58,8 @@ typedef enum {
     ASSIGN_EXPR,
     DECLARE_STMT,
     LOAD_STMT,
-    FUNC_DEF
+    FUNC_DEF,
+    FUNC_CALL
 } ASTkind;
 
 
@@ -130,6 +131,7 @@ ASTNode *make_assign_node(ASTNode *leaf_obj, ASTNode *right);
 ASTNode *make_declare_node(ASTNode *leaf_obj);
 ASTNode *make_load_node(ASTNode *leaf_obj);
 ASTNode *make_function_node(ASTNode *leaf_obj, ASTNode *right);
+ASTNode *make_func_call_node(ASTNode *leaf_obj, ASTNode *args);
 
 /* destructors */
 void destroy_obj(MinicObject *);

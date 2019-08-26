@@ -54,7 +54,7 @@ MinicObject *make_number_obj(char *n) {
 
     len_n = strlen(n);
     obj->value.number_value = (char *)calloc(len_n + 1, sizeof(char));
-    strcpy(obj->value.number_value, n);
+    memcpy(obj->value.number_value, n, len_n);
     return obj;
 }
 
@@ -153,6 +153,13 @@ ASTNode *make_load_node(ASTNode *leaf_obj) {
 ASTNode *make_function_node(ASTNode *leaf_obj, ASTNode *right) {
     MinicObject *obj = leaf_obj->obj;
     ASTNode *node = make_ast_node(FUNC_DEF, obj, OP_NIL, NULL, NULL, right);
+    return node;
+}
+
+
+ASTNode *make_func_call_node(ASTNode *leaf_obj, ASTNode *args) {
+    MinicObject *obj = leaf_obj->obj;
+    ASTNode *node = make_ast_node(FUNC_CALL, obj, OP_NIL, NULL, NULL, args);
     return node;
 }
 
@@ -428,7 +435,6 @@ static linkedlist *rec_codegen_stack_machine(ASTNode *ast,
             int location = VAR_INDEX++;
 
             id_map = bst_insert(id_map, id, location);
-            printf("declare id: %s:%d\n", id, location);
             program = rec_codegen_stack_machine(ast->right, current_label);
             break;
         }
@@ -493,6 +499,14 @@ static linkedlist *rec_codegen_stack_machine(ASTNode *ast,
                 ll_concat(program, func_code);
             }
             ll_append(program, ir_new_ret());
+            break;
+        }
+
+        case FUNC_CALL:
+        {
+            /*
+             *
+             */
             break;
         }
     }

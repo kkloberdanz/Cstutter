@@ -70,6 +70,7 @@ static FILE *source_file = NULL;
 %token LBRACE
 %token RBRACE
 %token SEMICOLON
+%token COMMA
 
 
 %left MINUS PLUS
@@ -138,6 +139,7 @@ expr        : expr PLUS expr        { $$ = make_operator_node(OP_PLUS, $1, $3) ;
             | expr TIMES expr       { $$ = make_operator_node(OP_TIMES, $1, $3) ; }
             | expr OVER expr        { $$ = make_operator_node(OP_DIVIDE, $1, $3) ; }
             | bool_expr             { $$ = $1 ; }
+            | call_func             { $$ = $1 ; }
             | LPAREN expr RPAREN    { $$ = $2 ; }
             | NUMBER                { $$ = make_leaf_node(make_number_obj(token_string)) ; }
             | id                    { $$ = make_load_node($1) ; }
@@ -149,6 +151,24 @@ bool_expr   : expr EQ expr          { $$ = make_operator_node(OP_EQ, $1, $3) ; }
             | expr GT expr          { $$ = make_operator_node(OP_GT, $1, $3) ; }
             | expr GE expr          { $$ = make_operator_node(OP_GE, $1, $3) ; }
             | expr NE expr          { $$ = make_operator_node(OP_NE, $1, $3) ; }
+            ;
+
+args        : expr                  { $$ = $1 ; }
+            | expr COMMA args       {
+                                        YYSTYPE ast = $3;
+                                        if (ast) {
+                                            while (ast->sibling) {
+                                                ast = ast->sibling;
+                                            }
+                                            ast->sibling = $1;
+                                            $$ = $3;
+                                        } else {
+                                            $$ = $1;
+                                        }
+                                    }
+            ;
+
+call_func   : id LPAREN args RPAREN { $$ = make_func_call_node($1, $3) ; }
             ;
 
 id          : ID                    { $$ = make_leaf_node(make_id_obj(token_string)) ; }
